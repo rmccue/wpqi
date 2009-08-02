@@ -1,0 +1,158 @@
+html { background: #f7f7f7; }
+
+body {
+	background: #fff;
+	color: #333;
+	font-family: "Lucida Grande", Verdana, Arial, "Bitstream Vera Sans", sans-serif;
+	margin: 2em auto 0 auto;
+	width: 700px;
+	padding: 1em 2em;
+	-moz-border-radius: 11px;
+	-khtml-border-radius: 11px;
+	-webkit-border-radius: 11px;
+	border-radius: 11px;
+	border: 1px solid #dfdfdf;
+}
+
+a { color: #2583ad; text-decoration: none; }
+
+a:hover { color: #d54e21; }
+
+#footer {
+	float: right;
+	font-size: 0.7em;
+	color:#999;
+}
+
+h1, h2 {
+	border-bottom: 1px solid #dadada;
+	clear: both;
+	color: #666;
+	font: Georgia, "Times New Roman", Times, serif;
+	margin: 5px 0 0 -4px;
+	padding: 0;
+	padding-bottom: 7px;
+}
+h1 a, h2 a{
+	color: inherit
+}
+
+h1 {
+	font-size: 20px;
+}
+
+h2 {
+	font-size: 16px;
+}
+
+p, li {
+	padding-bottom: 2px;
+	font-size: 12px;
+	line-height: 18px;
+}
+
+code { font-size: 13px; }
+
+ul, ol { padding: 5px 5px 5px 22px; }
+
+#logo { margin: 6px 0 14px 0; border-bottom: none;}
+
+.submit input, .button, .button-secondary {
+	font-family: "Lucida Grande", Verdana, Arial, "Bitstream Vera Sans", sans-serif;
+	text-decoration: none;
+	font-size: 14px !important;
+	line-height: 16px;
+	padding: 6px 12px;
+	cursor: pointer;
+	border: 1px solid #bbb;
+	color: #464646;
+	-moz-border-radius: 15px;
+	-khtml-border-radius: 15px;
+	-webkit-border-radius: 15px;
+	border-radius: 15px;
+	-moz-box-sizing: content-box;
+	-webkit-box-sizing: content-box;
+	-khtml-box-sizing: content-box;
+	box-sizing: content-box;
+}
+
+.button:hover, .button-secondary:hover, .submit input:hover {
+	color: #000;
+	border-color: #666;
+}
+
+.button, .submit input, .button-secondary {
+	background: #f2f2f2 repeat-x scroll left top;
+}
+
+.button:active, .submit input:active, .button-secondary:active {
+	background: #eee repeat-x scroll left top;
+}
+
+#error-page code { font-family: Consolas, Monaco, Courier, monospace; }
+
+p.error input {
+	background-color: #ffebe8;
+	border: 1px solid #c00;
+}
+
+label {
+	font-style:italic;
+	font-weight: bold;
+}
+fieldset label {
+	font-style: normal;
+	font-weight: normal;
+}
+fieldset.no-border {
+	border: none;
+	padding: 0;
+	margin-top: -0.8em;
+}
+input[type=text], input[type=textarea], input[type=password], select {
+	width: 100%;
+	background-color: #f3f3f3;
+	border: 1px solid #000;
+	padding: 0.5em;
+	font-size: 1.3em;
+}
+input.half-width, select.half-width {
+	width: 45%;
+}
+
+select.large {
+	font-size: 1.5em;
+	padding: 1em;
+}
+input.large {
+	font-size:  1.2em;
+	padding: 0.3em;
+}
+
+
+#install-options .two-column label {
+	font-weight: inherit;
+	font-style: inherit;
+}
+#install-options .two-column .left,
+#install-options .two-column .right {
+	width: 60%;
+	float: left;
+}
+#install-options .two-column .left {
+	width: 39%;
+}
+br.clear {
+	clear:both;
+}
+
+#lang-select, #version-select {
+	height: 2em;
+}
+
+.hidden {
+	display: none;
+}
+.force-show-block {
+	display: block !important;
+}
