@@ -40,7 +40,7 @@ include 'file.php';
 
 $wpdb = true; //Hack to stop auto-loading of the DB
 if ( file_exists('./db.php') ) {
-	/*BuildIgnore*/include 'db.php';
+	/*BuildIgnoreInclude*/include 'db.php';
 } else {
 	include 'wp-files/wp-includes/wp-db.php';
 }

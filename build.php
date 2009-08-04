@@ -34,7 +34,7 @@ function _replace_include($matches) {
 		return '';
 	}
 	$file = _strip_php_openers(file_get_contents($filename));
-	$file = preg_replace_callback('#(?<!/\*BuildIgnore\*/)(include|require|include_once|require_once)((\(.*?["\'](.+)["\']\s*\))|\s*["\'](.+)["\']);#i', '_replace_include', $file);
+	$file = preg_replace_callback('#(?<!/\*BuildIgnoreInclude\*/)(include|require|include_once|require_once)((\(.*?["\'](.+)["\']\s*\))|\s*["\'](.+)["\']);#i', '_replace_include', $file);
 	return "\n" . $file . "\n";
 }
 
@@ -72,6 +72,10 @@ $out_contents = str_replace('/*BuildRevision*/', $revision, $out_contents);
 
 //Remove any 'RemoveMe' blocks
 $out_contents = preg_replace('!(/\*BuildRemoveStart\*/.+?/\*BuildRemoveEnd\*/)!is', '', $out_contents);
+
+//Remove non-needed Build* markers.
+$out_contents = str_replace( array('/*BuildIgnoreInclude*/'), '', $out_contents);
+
 
 //Next, Remove any whitespace thats not needed from within PHP code
 $in_field = false;
