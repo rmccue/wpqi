@@ -1,5 +1,5 @@
 <?php
-define('FS_METHOD', 'ftpext');
+
 //If configuration exists, Load it.
 if ( file_exists('./config.php') && filemtime('./config.php') + 5*15*60 > time() )
 	/*BuildIgnoreInclude*/include './config.php';
