@@ -57,6 +57,22 @@ $out_contents = preg_replace('#([;{}(),])\s*//.+#i', '$1', $out_contents);
 $out_contents = preg_replace('#((case|default)\s*.*?\s*:)\s*//.+#i', '$1', $out_contents);
 $out_contents = preg_replace('#(else)\s*//.+#i', '$1', $out_contents); //Separate from the above to protect it from eating your babies.
 
+//Time to set the Build Date and Revision.
+$date = date('d/M/Y');
+$revision = '';
+if ( file_exists(dirname(__FILE__) . '/.svn/entries') ) {
+	$r_parts = file(dirname(__FILE__) . '/.svn/entries');
+	$revision = intval($r_parts[3]);
+	if ( $revision )
+		$revision = '<abbr title="Revision ' . $revision . '">r' . $revision . '</abbr>';
+	unset($r_parts);
+}
+$out_contents = str_replace('/*BuildDate*/', $date, $out_contents);
+$out_contents = str_replace('/*BuildRevision*/', $revision, $out_contents);
+
+//Remove any 'RemoveMe' blocks
+$out_contents = preg_replace('!(/\*BuildRemoveStart\*/.+?/\*BuildRemoveEnd\*/)!is', '', $out_contents);
+
 //Next, Remove any whitespace thats not needed from within PHP code
 $in_field = false;
 $in_php = true;
