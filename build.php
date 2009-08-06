@@ -26,8 +26,8 @@ $out_contents = preg_replace_callback('#(?<!/\*BuildIgnoreInclude\*/)(include|re
 function _replace_include($matches) {
 	$filename = isset($matches[5]) ? $matches[5] : $matches[4];
 
-	//if ( strpos($matches[3], 'ABSPATH') !== false )
-	//	$filename = 'wp-files/' . $filename;
+	$known_missing_includes = array('class-ftp-".($mod_sockets?"sockets":"pure").".php');
+
 	if ( !file_exists($filename) ) {
 		if ( ! isset($_REQUEST['quiet']) )
 			if ( !in_array($filename, $known_missing_includes) ) 
