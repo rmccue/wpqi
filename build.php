@@ -29,7 +29,8 @@ function _replace_include($matches) {
 	//if ( strpos($matches[3], 'ABSPATH') !== false )
 	//	$filename = 'wp-files/' . $filename;
 	if ( !file_exists($filename) ) {
-		echo '<p><strong>Warning:</strong> <code>' . $filename . '</code> does not exist</p>';
+		if ( ! isset($_REQUEST['quiet']) )
+			echo '<p><strong>Warning:</strong> <code>' . $filename . '</code> does not exist</p>';
 		return '';
 	}
 	$file = _strip_php_openers(file_get_contents($filename));
@@ -176,8 +177,6 @@ for ( $i = 0; $i < $count; $i++) {
 	}
 	//TODO Add a branch here to strip it out when its inside a PHP string..
 }
-
-highlight_string('<?php ' . _get_resources() . $out_contents);
 
 file_put_contents('release/installer-uncompressed.php', '<?php ' . _get_resources() . $out_contents);
 
