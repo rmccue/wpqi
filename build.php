@@ -30,7 +30,8 @@ function _replace_include($matches) {
 	//	$filename = 'wp-files/' . $filename;
 	if ( !file_exists($filename) ) {
 		if ( ! isset($_REQUEST['quiet']) )
-			echo '<p><strong>Warning:</strong> <code>' . $filename . '</code> does not exist</p>';
+			if ( !in_array($filename, $known_missing_includes) ) 
+				echo '<p><strong>Warning:</strong> <code>' . $filename . '</code> does not exist</p>';
 		return '';
 	}
 	$file = _strip_php_openers(file_get_contents($filename));
