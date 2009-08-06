@@ -10,7 +10,6 @@
 
 set_time_limit(0);
 $in = 'installer.php';
-$out = 'release/installer.php';
 
 $out_contents = 'define("COMPRESSED_BUILD", true); ' . _strip_php_openers(file_get_contents($in));
 
@@ -48,7 +47,7 @@ function _get_resources() {
 	return $reses;
 }
 
-file_put_contents($out . '.nonminimised.php', '<?php ' . _get_resources() . $out_contents);
+file_put_contents('release/installer-nonminimised.php', '<?php ' . _get_resources() . $out_contents);
 
 //Remove any comments
 $out_contents = preg_replace('!(/\*Build\S+?\*/)|(/\*.+?\*/)!is', '$1', $out_contents); //Remove Multiline comments, Leaving  special Build commands.
@@ -180,14 +179,12 @@ for ( $i = 0; $i < $count; $i++) {
 
 highlight_string('<?php ' . _get_resources() . $out_contents);
 
-file_put_contents($out . '.uncompressed.php', '<?php ' . _get_resources() . $out_contents);
-
-$warning = true ? '' : '/* Warning: This file is Compressed, Which is why eval+base64_decode are used. Its nothing to worry about in this case, Please visit http://.../ for more information on the WordPress Single-file Installer. */';
+file_put_contents('release/installer-uncompressed.php', '<?php ' . _get_resources() . $out_contents);
 
 //Final touches.. This is done to allow for functions to be defined in a later eval() block to allow for WP inclusion directly by compressed content.
 $chunks = explode('/*BuildCompressSplit*/', $out_contents);
-$out_contents = '<?php ' . $warning . _get_resources();
+$out_contents = '<?php ' . _get_resources();
 foreach ( $chunks as $chunk )
 	$out_contents .= "\n" . 'eval(gzuncompress(base64_decode("' . base64_encode(gzcompress($chunk, 9)) . '")));';
 
-file_put_contents($out, $out_contents);
+file_put_contents('release/installer.php', $out_contents);
