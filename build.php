@@ -57,10 +57,10 @@ file_put_contents('release/installer-nonminimised.php', '<?php ' . _get_resource
 
 //Remove any comments
 $out_contents = preg_replace('!(/\*Build\S+?\*/)|(/\*.+?\*/)!is', '$1', $out_contents); //Remove Multiline comments, Leaving  special Build commands.
-$out_contents = preg_replace('#^\s*//.+#im', '', $out_contents);
-$out_contents = preg_replace('#([;{}(),])\s*//.+#i', '$1', $out_contents);
-$out_contents = preg_replace('#((case|default)\s*.*?\s*:)\s*//.+#i', '$1', $out_contents);
-$out_contents = preg_replace('#(else)\s*//.+#i', '$1', $out_contents); //Separate from the above to protect it from eating your babies.
+$out_contents = preg_replace('#^\s*//.*#im', '', $out_contents); 
+$out_contents = preg_replace('#([;{}(),])\s*//.*#i', '$1', $out_contents);
+$out_contents = preg_replace('#((case|default)\s*.*?\s*:)\s*//.*#i', '$1', $out_contents);
+$out_contents = preg_replace('#(else)\s*//.*#i', '$1', $out_contents); //Separate from the above to protect it from eating your babies.
 
 //Time to set the Build Date and Revision.
 $date = date('d/M/Y');
