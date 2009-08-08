@@ -49,6 +49,10 @@ function _get_resources() {
 	return $reses;
 }
 
+function _get_requirements_notice() {
+	return "\nif(!function_exists('gzuncompress')||!function_exists('base64_decode'))die('This script requires for the functions <code>gzuncompress()</code>, <code>base64_decode</code> and <code>eval()</code> to be available. Your current hosting does not allow one or more of these functions. Please try a Minified Build instead.');\n"; //TODO: Eval doesnt seem to play nice here.
+}
+
 file_put_contents('release/installer-nonminimised.php', '<?php ' . _get_resources() . $out_contents);
 
 //Remove any comments
@@ -183,7 +187,7 @@ file_put_contents('release/installer-uncompressed.php', '<?php ' . _get_resource
 
 //Final touches.. This is done to allow for functions to be defined in a later eval() block to allow for WP inclusion directly by compressed content.
 $chunks = explode('/*BuildCompressSplit*/', $out_contents);
-$out_contents = '<?php ' . _get_resources();
+$out_contents = '<?php ' . _get_requirements_notice() . _get_resources();
 foreach ( $chunks as $chunk )
 	$out_contents .= "\n" . 'eval(gzuncompress(base64_decode("' . base64_encode(gzcompress($chunk, 9)) . '")));';
 
