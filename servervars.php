@@ -80,7 +80,7 @@ if ( empty($PHP_SELF) )
 $is_apache = (strpos($_SERVER['SERVER_SOFTWARE'], 'Apache') !== false || strpos($_SERVER['SERVER_SOFTWARE'], 'LiteSpeed') !== false);
 
 $installer_file = preg_replace('|\(\d+.*$|', '', __FILE__);
-if ( function_exists('posix_getpwuid') && $userinfo = posix_getpwuid(fileowner(__FILE__)) )
+if ( function_exists('posix_getpwuid') && $userinfo = posix_getpwuid(@fileowner(__FILE__)) )
 	$the_guessed_user = $userinfo['name'];
 else if ( preg_match('|^/home/([^/]+?)/|i', __FILE__, $mat) ) 
 	$the_guessed_user = $mat[1];
