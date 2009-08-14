@@ -8,7 +8,7 @@ include 'functions.php';
 include 'servervars.php';
 
 if ( 'install-wordpress' == $step ) {
-	//Here is where we run the  WordPress Installer via the usual process
+	//Here is where we run the WordPress Installer via the usual process
 	if ( ! isset($config['fs']) && !isset($config['fs']) ) {
 		header("Location: $PHP_SELF");
 		exit;
@@ -52,7 +52,7 @@ include 'wp-files/wp-admin/includes/class-wp-filesystem-ssh2.php';
 include 'wp-files/wp-admin/includes/class-wp-filesystem-ftpext.php';
 include 'wp-files/wp-admin/includes/class-ftp.php';
 if ( defined('COMPRESSED_BUILD') && COMPRESSED_BUILD ) { //class-ftp includes it in normal operation..
-	if ( $mod_sockets ) { //N
+	if ( $mod_sockets ) {
 		include 'wp-files/wp-admin/includes/class-ftp-sockets.php';
 	} else {
 		include 'wp-files/wp-admin/includes/class-ftp-pure.php';
@@ -81,4 +81,3 @@ switch ( $step ) {
 		include 'steps/install.php';
 		break;
 }
-

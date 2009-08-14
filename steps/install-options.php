@@ -6,7 +6,7 @@ if ( empty($config['db']) || empty($config['fs']) ) {
 }
 
 //2 requests to the API per install..
-$api = wp_remote_get('http://api.wpautoinstall.com/version-api/', array('timeout' => 10));
+$api = wp_remote_get('http://api.wpquickinstall.com/version-api/', array('timeout' => 10));
 if ( ! is_wp_error($api) && $api )
 	$api = @unserialize($api['body']);
 else

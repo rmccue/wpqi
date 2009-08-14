@@ -4,7 +4,7 @@ if ( empty($config['db']) || empty($config['fs']) ) {
 	exit;
 }
 the_header('install');
-?><h2>Installing...</h2><?php 
+?><h2>Installing...</h2><?php
 
 $requested_url  = ( !empty($_SERVER['HTTPS'] ) && strtolower($_SERVER['HTTPS']) == 'on' ) ? 'https://' : 'http://';
 $requested_url .= $_SERVER['HTTP_HOST'];

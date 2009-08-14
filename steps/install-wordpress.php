@@ -48,8 +48,7 @@ update_option('siteurl', $guessurl);
 update_option('home', $guessurl);
 
 // If not a public blog, don't ping.
-if ( $public_blog )
-	update_option('default_pingback_flag', 0);
+update_option('default_pingback_flag', $public_blog ? "1" : "0");
 
 //If installer is to enable permalinks, enable the base permalink structure. - Note, That the single-file installer also creates the .htaccess file, and chmod 777's it.
 if ( $pretty_permalinks )
