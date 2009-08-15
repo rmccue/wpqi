@@ -42,7 +42,7 @@ $wpdb = true; //Hack to stop auto-loading of the DB
 if ( file_exists('./db.php') ) {
 	/*BuildIgnoreInclude*/include 'db.php';
 } else {
-	include 'wp-files/wp-includes/wp-db.php';
+	include 'wp-db.php'; //Until #10293 is closed upstream //'wp-files/wp-includes/wp-db.php';
 }
 include 'wordpress-functions.php';
 include 'wp-files/wp-includes/http.php';

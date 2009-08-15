@@ -13,9 +13,9 @@ if ( 'db-detail-check' == $step ) {
 	$installed = $wpdb->get_var( "SELECT option_value FROM $wpdb->options WHERE option_name = 'siteurl'" );
 	$installed = !empty( $installed );
 
-	if ( isset($wpdb->error) && is_wp_error($wpdb->error) && strpos($wpdb->error->get_error_message(), 'Error establishing a database connection') )
+	if ( isset($wpdb->error) && is_wp_error($wpdb->error) && 'db_connect_fail' == $wpdb->error->get_error_code() )
 		$errors[] = 'credentials';
-	elseif ( isset($wpdb->error) && is_wp_error($wpdb->error) && strpos($wpdb->error->get_error_message(), 'We were able to connect to the database server') )
+	elseif ( isset($wpdb->error) && is_wp_error($wpdb->error) && 'db_select_fail' == $wpdb->error->get_error_code() )
 		$errors[] = 'database';
 	elseif ( is_wp_error($prefix_test) || $installed )
 		$errors[] = 'prefix';
