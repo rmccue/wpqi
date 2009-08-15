@@ -7,7 +7,7 @@ if ( empty($config['db']) || empty($config['fs']) ) {
 
 //2 requests to the API per install..
 $api = wp_remote_get('http://api.wpquickinstall.com/version-api/', array('timeout' => 10));
-if ( ! is_wp_error($api) && $api )
+if ( ! is_wp_error($api) && $api && !empty($api['body']) && 200 == $api['response']['code'] )
 	$api = @unserialize($api['body']);
 else
 	$api = array('versions' => array(), 'langs' => array( 'en_US' => array('latest' => array('language' => 'API Down: Latest English Release Only.', 'lang' => 'en_US', 'download' => 'http://wordpress.org/latest.zip', 'homepage' => 'http://wordpress.org/') ) ) );
