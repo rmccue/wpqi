@@ -41,7 +41,6 @@ unset($tmp_vers);
 
 $errors = array();
 if ( 'install-options-check' == $step ) {
-	WP_Filesystem( $config['fs'] );
 	if ( !empty($api['langs'][$lang][$version]['package']) )
 		$config['package'] = $api['langs'][$lang][$version]['package'];
 	$config['title'] = $title;
@@ -61,7 +60,10 @@ if ( 'install-options-check' == $step ) {
 
 	if ( empty($errors) ) {
 		write_config();
-		header("Location: {$PHP_SELF}?step=install");
+		if ( in_array('customize-plugins', $selected_options) )
+			header("Location: {$PHP_SELF}?step=packages");
+		else
+			header("Location: {$PHP_SELF}?step=install");
 		exit;
 	}
 }
@@ -175,7 +177,7 @@ if ( ! defined('COMPRESSED_BUILD') || !COMPRESSED_BUILD )
 <?php endforeach; ?>
 </fieldset>
 </div>
-<p class="step"><input name="submit" type="submit" value="Install WordPress" class="button" /></p>
+<p class="step"><input name="submit" type="submit" value="Continue" class="button" /></p>
 <p><input type="checkbox" name="advanced-options" id="advanced-options-toggle" <?php if ( isset($_REQUEST['advanced-options']) ) echo ' checked="checked"' ?>  /><label for="advanced-options-toggle">Show Advanced Options</label></p>
 </form>
 <?php
