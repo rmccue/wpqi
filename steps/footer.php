@@ -19,20 +19,6 @@ function the_footer() {
 		echo "Development Build " . $revision;
 	} /*BuildRemoveEnd*/ ?>
 </div>
-<script type="text/javascript">
-function advanced_options() {
-	var div = document.getElementById('advanced-options');
-	var toggle = document.getElementById('advanced-options-toggle');
-	if ( ! div || ! toggle )
-		return;
-	if ( div.className && div.className.indexOf('force-show-block') )
-		return;
-	if ( ! toggle.onchange )
-		toggle.onchange = function() { advanced_options(); };
-	div.style.display = toggle.checked ? 'block' : 'none';
-}
-advanced_options();
-</script>
 </body>
 </html>
 <?php

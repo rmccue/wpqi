@@ -99,5 +99,3 @@ this.listexpander = function(){
 	start();
 	
 };
-
-window.onload = listexpander;
