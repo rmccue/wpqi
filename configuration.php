@@ -1,6 +1,6 @@
 <?php
 
-//If configuration exists, Load it.
+//If configuration exists, Load it if it was last touched in the last 5 hours. //TODO reduce to 45mins for release.
 if ( file_exists('./config.php') && filemtime('./config.php') + 5*15*60 > time() )
 	/*BuildIgnoreInclude*/include './config.php';
 
@@ -10,7 +10,9 @@ if ( ! isset($config) )
 if ( isset($config['user']) ) {
 
 	if ( $config['user']['time'] < time() ) { //timeout.
-		$config = array(); //reset it.
+		//Overwrite sensitive details as the current session has timed out, Retain the user settings which have already been saved however.
+		$config['db'] = array();
+		$config['fs'] = array();
 		write_config();
 		if ( $step != 'first' ) {
 			header("Location: {$PHP_SELF}");
@@ -29,7 +31,7 @@ if ( isset($config['user']) ) {
 $hash = isset($config['user']['cookie']) ? $config['user']['cookie'] : md5(time() . microtime());
 setcookie('wpauto', $hash, time() + 5*15*60);
 
-$config['user'] = array('time' => time() + 5*15*60, 'cookie' => $hash);
+$config['user'] = array('time' => time() + 5*15*60, 'cookie' => $hash); //TODO decrease timeout to 45m instead of 5h for release.
 
 function write_config() {
 	global $config, $wp_filesystem;
