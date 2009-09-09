@@ -1,5 +1,5 @@
 <?php
-function the_header($id = '') {
+function the_header($id = '', $extra_resources = array()) {
 /*$total_steps = 5;
 if ( get_filesystem_method() == 'direct' ) {
 	$total_steps--;
@@ -16,6 +16,14 @@ $percentage_width = ceil($step*(700/$total_steps))*/
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <title>WordPress QI - The Single file WordPress Quick Installer</title>
 <link rel="stylesheet" type="text/css" href="<?php echo res_url('install.css') ?>" />
+<?php
+foreach((array)$extra_resources as $file ) { 
+	if ( 'css' == substr($file, -3) )
+		echo '<link rel="stylesheet" type="text/css" href="' . res_url($file) . '" />';
+	elseif ( 'js' == substr($file, -2) )
+		echo '<script type="text/javascript" src="' . res_url($file) . '"></script>';
+}
+?>
 <?php /* <script src="http://www.google.com/jsapi"></script>
 <script type="text/javascript">
 <!--
