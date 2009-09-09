@@ -25,7 +25,7 @@ if ( 'install-wordpress' == $step ) {
 /*BuildCompressSplit*/
 define('ABSPATH', dirname(__FILE__) . '/');
 if ( !defined('WP_MEMORY_LIMIT') )
-	define('WP_MEMORY_LIMIT', '32M');
+	define('WP_MEMORY_LIMIT', '64M');
 
 if ( function_exists('memory_get_usage') && ( (int) @ini_get('memory_limit') < abs(intval(WP_MEMORY_LIMIT)) ) )
 	@ini_set('memory_limit', WP_MEMORY_LIMIT);
@@ -42,7 +42,7 @@ $wpdb = true; //Hack to stop auto-loading of the DB
 if ( file_exists('./db.php') ) {
 	/*BuildIgnoreInclude*/include 'db.php';
 } else {
-	include 'wp-db.php'; //Until #10293 is closed upstream //'wp-files/wp-includes/wp-db.php';
+	include 'wp-files/wp-includes/wp-db.php';
 }
 include 'wordpress-functions.php';
 include 'wp-files/wp-includes/http.php';
