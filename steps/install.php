@@ -147,28 +147,6 @@ RewriteRule . /index.php [L]
 	}
 }
 
-//If need be, Delete default plugins now.
-$remove_plugins = array();
-if ( !in_array('akismet', $config['plugins']) )
-	$remove_plugins[] =  'akismet';
-if ( !in_array('hello-dolly', $config['plugins']) )
-	$remove_plugins[] = 'hello-dolly';
-if ( !empty($remove_plugins) ) {
-	foreach ( $remove_plugins as $plugin ) {
-		printf('<p>Removing Default Plugin "<em>%s</em>".. ', $plugin);
-		if ( 'akismet' == $plugin ) 
-			$res = $wp_filesystem->delete( trailingslashit(ABSPATH . $config['destination']) . 'wp-content/plugins/akismet/', true); 
-		else if ( 'hello-dolly' == $plugin )
-			$res = $wp_filesystem->delete( trailingslashit(ABSPATH . $config['destination']) . 'wp-content/plugins/hello.php'); 
-		
-		if ( $res )
-			echo '<strong>Success!</strong>.</p>';
-		else
-			echo '<strong>Failure</strong>.</p>';
-	}//endforeach
-}
-unset($remove_plugins, $plugin, $res);
-
 //Run the install!
 echo '<p>Creating Database Tables and settings defaults.. ';
 

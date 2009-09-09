@@ -129,19 +129,6 @@ input.large {
 	padding: 0.3em;
 }
 
-
-#install-options .two-column label {
-	font-weight: inherit;
-	font-style: inherit;
-}
-#install-options .two-column .left,
-#install-options .two-column .right {
-	width: 60%;
-	float: left;
-}
-#install-options .two-column .left {
-	width: 39%;
-}
 br.clear {
 	clear:both;
 }

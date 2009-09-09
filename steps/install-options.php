@@ -35,8 +35,7 @@ $tmp_vers = array_filter($tmp_vers, '_stable_versions_filter' ); //Figure out wh
 
 $version = isset($_REQUEST['version']) && !empty($api['langs'][$lang][$_REQUEST['version']]) ? $_REQUEST['version'] : (count($tmp_vers) ? max($tmp_vers) : '');
 
-$selected_options = ('install-options-check' == $step) ? (isset($_POST['options']) ? array_keys($_POST['options']) : array()) : array('create-default-objects');
-$selected_plugins = ('install-options-check' == $step) ? (isset($_POST['plugins']) ? $_POST['plugins'] : array()) : array('akismet', 'hello-dolly');
+$selected_options = ('install-options-check' == $step) ? (isset($_POST['options']) ? array_keys($_POST['options']) : array()) : array('create-default-objects', 'allow-search-engines','pretty-permalinks', 'customize-plugins');
 
 unset($tmp_vers);
 
@@ -59,10 +58,6 @@ if ( 'install-options-check' == $step ) {
 	$config['lang'] = $lang;
 	
 	$config['options'] = $selected_options;
-	$config['plugins'] = $selected_plugins;
-	foreach ( array('akismet', 'hello-dolly') as $plugin )
-		if ( array_search($plugin, $config['plugins']) )
-			unset($config['plugins'][ array_search($plugin, $config['plugins']) ]);
 
 	if ( empty($errors) ) {
 		write_config();
@@ -165,46 +160,20 @@ if ( ! defined('COMPRESSED_BUILD') || !COMPRESSED_BUILD )
 <input type="text" class="large" name="url" id="url" value="<?php echo $url ?>" disabled="disabled" />
 </p>
 <div id="advanced-options">
-<div class="two-column">
-<div class="right">
 <fieldset>
 	<legend>Install Options</legend>
 <?php
 	$options = array(
 				'create-default-objects' => 'Create Example Posts, Posts, Links and Comments',
 				'allow-search-engines' => 'Allow this Installation to appear in Search Engines.',
-				'pretty-permalinks' => 'Enable <em>Pretty Permalinks</em> by default.'
+				'pretty-permalinks' => 'Enable <em>Pretty Permalinks</em> by default.',
+				'customize-plugins' => 'Customise which Plugins are installed through a helpful package selecter.'
 					 );
 	foreach ( $options as $option => $text ) :
 ?>
 	<input type="checkbox" name="options[<?php echo $option ?>]" id="<?php echo $option ?>" <?php if ( in_array($option, $selected_options) ) echo ' checked="checked"'; ?> /> <label for="<?php echo $option ?>"><?php echo $text ?></label><br />
 <?php endforeach; ?>
 </fieldset>
-</div>
-<div class="left">
-<?php 
-	$plugin_packs = array(
-					'Pre-Installed Plugins' => array(
-								'akismet' => 'Akismet',
-								'hello-dolly' => 'Hello Dolly',
-								'wpcom-stats' => 'WordPress.com Stats',
-												)
-						  );
-	if ( !empty($plugin_packs) ) :
-?>
-<?php foreach($plugin_packs as $text => $plugins ) : ?>
-<fieldset>
-	<legend><?php echo $text ?></legend>
-	<?php foreach ( $plugins as $slug => $text ) : ?>
-	<input <?php if ( 'wpcom-stats' == $slug ) echo 'disabled="disabled"' ?> type="checkbox" name="plugins[]" value="<?php echo $slug ?>" id="<?php echo $slug ?>" <?php if ( in_array($slug, $selected_plugins) ) echo 'checked="checked"' ?> /> <label for="<?php echo $slug ?>"><?php echo $text ?></label><br />
-	<?php endforeach; ?>
-</fieldset>
-<!-- Note: Installation of extra plugins is not yet supported. -->
-<?php endforeach; ?>
-<?php endif; ?>
-</div>
-<br class="clear" />
-</div>
 </div>
 <p class="step"><input name="submit" type="submit" value="Install WordPress" class="button" /></p>
 <p><input type="checkbox" name="advanced-options" id="advanced-options-toggle" <?php if ( isset($_REQUEST['advanced-options']) ) echo ' checked="checked"' ?>  /><label for="advanced-options-toggle">Show Advanced Options</label></p>

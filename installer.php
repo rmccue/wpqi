@@ -31,7 +31,7 @@ if ( function_exists('memory_get_usage') && ( (int) @ini_get('memory_limit') < a
 	@ini_set('memory_limit', WP_MEMORY_LIMIT);
 
 error_reporting(E_ALL);
-ini_set('display_errors', 1);
+@ini_set('display_errors', 1);
 
 include 'steps/header.php';
 include 'steps/footer.php';
