@@ -5,11 +5,19 @@ if ( empty($config['db']) || empty($config['fs']) ) {
 	exit;
 }
 
-//2 requests to the API per install..
-$api = wp_remote_get('http://api.wpquickinstall.com/version-api/', array('timeout' => 10));
-if ( ! is_wp_error($api) && $api && !empty($api['body']) && 200 == $api['response']['code'] )
-	$api = @unserialize($api['body']);
-else
+if ( isset($config['api']) && !empty($config['api']) ) {
+	$api = $config['api'];
+} else {
+	$api = wp_remote_get('http://api.wpquickinstall.com/version-api/', array('timeout' => 10));
+	if ( ! is_wp_error($api) && $api && !empty($api['body']) && 200 == $api['response']['code'] ) {
+		$api = @unserialize($api['body']);
+		if ( $api ) {
+			$config['api'] = $api;
+		}
+	}
+}
+
+if ( !$api || is_wp_error($api) )
 	$api = array('versions' => array(), 'langs' => array( 'en_US' => array('latest' => array('language' => 'API Down: Latest English Release Only.', 'lang' => 'en_US', 'download' => 'http://wordpress.org/latest.zip', 'homepage' => 'http://wordpress.org/') ) ) );
 
 foreach ( array('title' => '', 'email' => '', 'tagline' => '', 'lang' => $the_guessed_language) as $field => $default )
@@ -18,6 +26,7 @@ foreach ( array('title' => '', 'email' => '', 'tagline' => '', 'lang' => $the_gu
 if ( ! isset($api['langs'][ $lang ]) )
 	$lang = 'en_US';
 
+//TODO: I believe theres a sorting bug below somewhere..
 function _stable_versions_filter($a) { //Callback filter for below filter.
 	return !preg_match("|[^0-9\.]|", $a);
 }
