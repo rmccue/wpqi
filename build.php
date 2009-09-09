@@ -21,7 +21,7 @@ function _strip_php_openers($file) {
 //var_dump( preg_match('#(include|require|include_once|require_once)\s*\(?\s*(["\'])(.+)\\2;#', $out_contents, $matches), $matches);
 
 //First, Replace includes.
-$out_contents = preg_replace_callback('#(?<!/\*BuildIgnoreInclude\*/)(include|require|include_once|require_once)((\(.*?["\'](.+)["\']\s*\))|\s*["\'](.+)["\']);#i', '_replace_include', $out_contents);
+$out_contents = preg_replace_callback('#(?<!/\*BuildIgnoreInclude\*/)(include|require|include_once|require_once)((\(.*?["\'](.+?)["\']\s*\))|\s*["\'](.+)["\']);#i', '_replace_include', $out_contents);
 
 function _replace_include($matches) {
 	$filename = isset($matches[5]) ? $matches[5] : $matches[4];
