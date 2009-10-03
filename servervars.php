@@ -91,4 +91,4 @@ $the_guessed_language = 'en_US';
 if ( !empty($_SERVER['HTTP_ACCEPT_LANGUAGE']) && preg_match('|(\w\w[\-_]\w\w)|i', $_SERVER['HTTP_ACCEPT_LANGUAGE'], $mat ) )
 	$the_guessed_language = str_replace('-', '_', $mat[1]);
 
-$wpa_version = '0.5-pre-beta';
+$wpqi_version = '0.5-pre-beta';

@@ -1,9 +1,9 @@
 <?php
 function the_footer() {
-	global $wpa_version;
+	global $wpqi_version;
 ?>
 <div id="footer">
-<a href="http://wpquickinstall.com/">WordPress QI - The Single-file WordPress Quick Installer</a> by <a href="http://dd32.id.au/">Dion Hulse</a>. Version <?php echo $wpa_version ?>&nbsp;<?php
+<a href="http://wpquickinstall.com/">WordPress QI - The Single-file WordPress Quick Installer</a> by <a href="http://dd32.id.au/">Dion Hulse</a>. Version <?php echo $wpqi_version ?>&nbsp;<?php
 	/*BuildRemoveStart*/
 	if ( defined('COMPRESSED_BUILD') && COMPRESSED_BUILD ) {
 	/*BuildRemoveEnd*/
