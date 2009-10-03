@@ -77,10 +77,6 @@ switch ( $step ) {
 	case 'install-options-check':
 		include 'steps/install-options.php';
 		break;
-	case 'packages':
-	case 'packages-check':
-		include 'steps/packages.php';
-		break;
 	case 'install':
 		include 'steps/install.php';
 		break;

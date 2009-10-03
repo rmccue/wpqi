@@ -14,8 +14,6 @@ this.advanced_options = function() {
 this.common_loader = function() {
 	if ( 'function' == typeof(this.advanced_options) )
 		this.advanced_options();
-	if ( 'function' == typeof(this.listexpander) )
-		this.listexpander();
 }
 
 window.onload = common_loader

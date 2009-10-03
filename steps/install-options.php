@@ -35,7 +35,7 @@ $tmp_vers = array_filter($tmp_vers, '_stable_versions_filter' ); //Figure out wh
 
 $version = isset($_REQUEST['version']) && !empty($api['langs'][$lang][$_REQUEST['version']]) ? $_REQUEST['version'] : (count($tmp_vers) ? max($tmp_vers) : '');
 
-$selected_options = ('install-options-check' == $step) ? (isset($_POST['options']) ? array_keys($_POST['options']) : array()) : array('create-default-objects', 'allow-search-engines','pretty-permalinks', 'customize-plugins');
+$selected_options = ('install-options-check' == $step) ? (isset($_POST['options']) ? array_keys($_POST['options']) : array()) : array('create-default-objects', 'allow-search-engines','pretty-permalinks');
 
 unset($tmp_vers);
 
@@ -60,10 +60,7 @@ if ( 'install-options-check' == $step ) {
 
 	if ( empty($errors) ) {
 		write_config();
-		if ( in_array('customize-plugins', $selected_options) )
-			header("Location: {$PHP_SELF}?step=packages");
-		else
-			header("Location: {$PHP_SELF}?step=install");
+		header("Location: {$PHP_SELF}?step=install");
 		exit;
 	}
 }
@@ -169,7 +166,6 @@ if ( ! defined('COMPRESSED_BUILD') || !COMPRESSED_BUILD )
 				'create-default-objects' => 'Create Example Posts, Posts, Links and Comments',
 				'allow-search-engines' => 'Allow this Installation to appear in Search Engines.',
 				'pretty-permalinks' => 'Enable <em>Pretty Permalinks</em> by default.',
-				'customize-plugins' => 'Customise which Plugins are installed through a helpful package selecter.'
 					 );
 	foreach ( $options as $option => $text ) :
 ?>
