@@ -30,10 +30,8 @@ if ( get_magic_quotes_gpc() ) {
 // Force REQUEST to be GET + POST.  If SERVER, COOKIE, or ENV are needed, use those superglobals directly.
 $_REQUEST = array_merge($_GET, $_POST);
 
-//TODO: Merge WP changes into below code.
-
-// Fix for IIS, which doesn't set REQUEST_URI
-if ( empty( $_SERVER['REQUEST_URI'] ) ) {
+/// Fix for IIS when running with PHP ISAPI
+if ( empty( $_SERVER['REQUEST_URI'] ) || ( php_sapi_name() != 'cgi-fcgi' && preg_match( '/^Microsoft-IIS\//', $_SERVER['SERVER_SOFTWARE'] ) ) ) {
 
 	// IIS Mod-Rewrite
 	if (isset($_SERVER['HTTP_X_ORIGINAL_URL'])) {
@@ -75,14 +73,15 @@ if (strpos($_SERVER['SCRIPT_NAME'], 'php.cgi') !== false)
 // Fix empty PHP_SELF
 $PHP_SELF = $_SERVER['PHP_SELF'];
 if ( empty($PHP_SELF) )
-	$_SERVER['PHP_SELF'] = $PHP_SELF = preg_replace('/(\?.*)?$/', '', $_SERVER['REQUEST_URI']);
+	$_SERVER['PHP_SELF'] = $PHP_SELF = preg_replace("/(\?.*)?$/",'',$_SERVER["REQUEST_URI"]);
 	
 $is_apache = (strpos($_SERVER['SERVER_SOFTWARE'], 'Apache') !== false || strpos($_SERVER['SERVER_SOFTWARE'], 'LiteSpeed') !== false);
 
-$installer_file = preg_replace('|\(\d+.*$|', '', __FILE__);
-if ( function_exists('posix_getpwuid') && $userinfo = posix_getpwuid(@fileowner(__FILE__)) )
+$installer_file = defined('COMPRESSED_BUILD') && COMPRESSED_BUILD ? preg_replace('|\(\d+.*$|', '', __FILE__) : dirname(__FILE__) . '/installer.php';
+
+if ( function_exists('posix_getpwuid') && $userinfo = posix_getpwuid(@fileowner($installer_file)) )
 	$the_guessed_user = $userinfo['name'];
-else if ( preg_match('|^/home/([^/]+?)/|i', __FILE__, $mat) ) 
+else if ( preg_match('|^/home/([^/]+?)/|i', $installer_file, $mat) ) 
 	$the_guessed_user = $mat[1];
 else
 	$the_guessed_user = 'username';
