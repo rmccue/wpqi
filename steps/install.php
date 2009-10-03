@@ -62,15 +62,17 @@ echo '</p>';
 echo '<p>Creating <code>wp-config.php</code>, seting Database credentials and generating security keys.. ';
 $sample = file_get_contents( trailingslashit(ABSPATH . $config['destination']) . 'wp-config-sample.php');
 
-$required_wp_config_defines = array('AUTH_KEY' => null, 'SECURE_AUTH_KEY' => null, 'LOGGED_IN_KEY' => null, 'NONCE_KEY' => null);
+$required_wp_config_defines = array('AUTH_KEY' => null, 'SECURE_AUTH_KEY' => null, 'LOGGED_IN_KEY' => null, 'NONCE_KEY' => null,
+									'DB_NAME' => null, 'DB_USER' => '', 'DB_PASSWORD' => null, 'DB_HOST' => null);
 if ( in_array('pretty-permalinks', $config['options']) )
 	$required_wp_config_defines['WP_DEBUG'] = true;
 
 //If a define doesnt exist already, Better add it to the file.. Best to be secure.
 //Note: We do NOT care about the value at this stage, This is mearly a placeholder setup, The next function(_install_replace_constant) will fill the constant value in.
+//The Build script doesnt check to see if comments and php openers are in a string or not, Which is why the following code has string breaks.
 foreach ( $required_wp_config_defines as $_define => $_value )
 	if ( ! preg_match("!define\('" . preg_quote($_define, '!') . "'!ix", $sample) )
-		$sample = str_replace('<?php', "<?php\r\ndefine('$_define', false);//Added by WordPress QI automatically.\n", $sample);
+		$sample = str_replace('<'.'?php', "<"."?php\r\ndefine('$_define', false);/"."/Added by WordPress QI automatically.\n", $sample);
 
 function _install_replace_constant($matches) {
 	global $config, $required_wp_config_defines;
@@ -95,13 +97,14 @@ function _install_replace_constant($matches) {
 			$replacement = wp_generate_password(64, true);
 			break;
 		default:
-			if ( isset($required_wp_config_defines[ $matches[1] ]) )
+			if ( isset($required_wp_config_defines[ $matches[1] ]) ) {
 				$replacement = $required_wp_config_defines[ $matches[1] ];
-			if ( ! is_string($replacement) ) { 
-				if ( is_bool($replacement) )
-					$replacement = $replacement ? 'true' : 'false';
-				elseif ( is_null($replacement) )
-					$replacement = '';
+				if ( ! is_string($replacement) ) {
+					if ( is_bool($replacement) )
+						$replacement = $replacement ? 'true' : 'false';
+					elseif ( is_null($replacement) )
+						$replacement = '';
+				}
 			}
 			break;
 	}
@@ -126,7 +129,7 @@ if ( $wp_filesystem->put_contents( trailingslashit(ABSPATH . $config['destinatio
 }
 unset($new_file, $sample);
 
-if ( 'direct' != get_filesystem_method() && !is_writable( trailingslashit(ABSPATH . $config['destination') . '/wp-content/' ) ) {
+if ( 'direct' != get_filesystem_method() && !is_writable( trailingslashit(ABSPATH . $config['destination']) . '/wp-content/' ) ) {
 	//Create cache + upload directories, Chmod accordingly. - TODO try 755, 775, 777 instead.
 	//Only do this when using FTP, When using direct access, Theres no problems related to it.
 	$folder = trailingslashit(ABSPATH . $config['destination']) . '/wp-content/uploads/';
