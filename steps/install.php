@@ -4,7 +4,7 @@ if ( empty($config['db']) || empty($config['fs']) ) {
 	exit;
 }
 the_header('install');
-?><h2>Installing...</h2><?php
+echo '<h2>Installing...</h2>';
 
 $requested_url  = ( !empty($_SERVER['HTTPS'] ) && strtolower($_SERVER['HTTPS']) == 'on' ) ? 'https://' : 'http://';
 $requested_url .= $_SERVER['HTTP_HOST'];
@@ -62,8 +62,18 @@ echo '</p>';
 echo '<p>Creating <code>wp-config.php</code>, seting Database credentials and generating security keys.. ';
 $sample = file_get_contents( trailingslashit(ABSPATH . $config['destination']) . 'wp-config-sample.php');
 
+$required_wp_config_defines = array('AUTH_KEY' => null, 'SECURE_AUTH_KEY' => null, 'LOGGED_IN_KEY' => null, 'NONCE_KEY' => null);
+if ( in_array('pretty-permalinks', $config['options']) )
+	$required_wp_config_defines['WP_DEBUG'] = true;
+
+//If a define doesnt exist already, Better add it to the file.. Best to be secure.
+//Note: We do NOT care about the value at this stage, This is mearly a placeholder setup, The next function(_install_replace_constant) will fill the constant value in.
+foreach ( $required_wp_config_defines as $_define => $_value )
+	if ( ! preg_match("!define\('" . preg_quote($_define, '!') . "'!ix", $sample) )
+		$sample = str_replace('<?php', "<?php\r\ndefine('$_define', false);//Added by WordPress QI automatically.\n", $sample);
+
 function _install_replace_constant($matches) {
-	global $config;
+	global $config, $required_wp_config_defines;
 	$replacement = false;
 	switch($matches[1]) {
 		case 'DB_NAME':
@@ -83,8 +93,16 @@ function _install_replace_constant($matches) {
 		case 'LOGGED_IN_KEY':
 		case 'NONCE_KEY':
 			$replacement = wp_generate_password(64, true);
-			if ( 'AUTH_KEY' == $matches[1] )
-				$GLOBALS['AUTH_KEY'] = substr($replacement, 0, 7); //Remember this, Its used by the install-handler for authentication purposes. - is that really the best move?
+			break;
+		default:
+			if ( isset($required_wp_config_defines[ $matches[1] ]) )
+				$replacement = $required_wp_config_defines[ $matches[1] ];
+			if ( ! is_string($replacement) ) { 
+				if ( is_bool($replacement) )
+					$replacement = $replacement ? 'true' : 'false';
+				elseif ( is_null($replacement) )
+					$replacement = '';
+			}
 			break;
 	}
 	if ( ! $replacement )
@@ -92,7 +110,7 @@ function _install_replace_constant($matches) {
 	else
 		return str_replace( $matches[2], $replacement, $matches[0]);
 }
-$new_file = preg_replace_callback("|define\('([A-Z_]+?)',\s*'([^']+?)'\)|ix", '_install_replace_constant', $sample); //TODO note escaped ' 's 
+$new_file = preg_replace_callback("!define\('([A-Z0-9_]+?)',\s*'?([^')]+?)'?\)!ix", '_install_replace_constant', $sample); //TODO note escaped ' 's 
 
 //Database Table Prefix:
 $new_file = preg_replace('|\$table_prefix.*?;(.*?)|ix', "\$table_prefix = '{$config['db']['prefix']}';", $new_file);
@@ -108,8 +126,8 @@ if ( $wp_filesystem->put_contents( trailingslashit(ABSPATH . $config['destinatio
 }
 unset($new_file, $sample);
 
-if ( 'direct' != get_filesystem_method() && !is_writable( trailingslashit(ABSPATH . $config['destination']) . '/wp-content/' ) ) {
-	//Create cache + upload directories, Chmod accordingly.
+if ( 'direct' != get_filesystem_method() && !is_writable( trailingslashit(ABSPATH . $config['destination') . '/wp-content/' ) ) {
+	//Create cache + upload directories, Chmod accordingly. - TODO try 755, 775, 777 instead.
 	//Only do this when using FTP, When using direct access, Theres no problems related to it.
 	$folder = trailingslashit(ABSPATH . $config['destination']) . '/wp-content/uploads/';
 	if ( ! is_writable($folder) ) { 
@@ -131,7 +149,7 @@ if ( 'direct' != get_filesystem_method() && !is_writable( trailingslashit(ABSPAT
 
 //Create the .htaccess
 if ( in_array('pretty-permalinks', $config['options']) ) {
-	echo '<p>Creating <code>.htaccess</code> to enable Permalinks... ';
+	echo '<p>Creating <code>.htaccess</code> to enable <em>Pretty Permalinks</em>... ';
 	$htaccess_content = '# BEGIN WordPress
 RewriteEngine On
 RewriteBase /
@@ -150,13 +168,13 @@ RewriteRule . /index.php [L]
 //Run the install!
 echo '<p>Creating Database Tables and settings defaults.. ';
 
-$post_data = array('title' => $config['title'], 'email' => $config['email'], 'options' => $config['options'], 'plugins' => $config['plugins']);
+$post_data = array('title' => $config['title'], 'email' => $config['email'], 'options' => $config['options']);
 
 $data = wp_remote_post( substr($requested_url, 0, strpos($requested_url, '?')) . '?step=install-wordpress',
 						array(	'body' => $post_data,
 							  	'cookies' => cookie_array_to_cookie_http_objects($_COOKIE),
 								'timeout' => 60,
-								'user-agent' => 'WordPress Automatic Installer/1.0')
+								'user-agent' => 'WordPress QI/0.5beta')
 						);
 
 $details = @unserialize( $data['body'] );

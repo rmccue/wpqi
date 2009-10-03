@@ -166,7 +166,8 @@ if ( ! defined('COMPRESSED_BUILD') || !COMPRESSED_BUILD )
 				'create-default-objects' => 'Create Example Posts, Posts, Links and Comments',
 				'allow-search-engines' => 'Allow this Installation to appear in Search Engines.',
 				'pretty-permalinks' => 'Enable <em>Pretty Permalinks</em> by default.',
-					 );
+				'debug-install' => 'Enable Development mode on the WordPress Install.'
+				);
 	foreach ( $options as $option => $text ) :
 ?>
 	<input type="checkbox" name="options[<?php echo $option ?>]" id="<?php echo $option ?>" <?php if ( in_array($option, $selected_options) ) echo ' checked="checked"'; ?> /> <label for="<?php echo $option ?>"><?php echo $text ?></label><br />
