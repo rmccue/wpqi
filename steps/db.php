@@ -8,6 +8,7 @@ $errors = array();
 $installed = $prefix_test = false;
 if ( 'db-detail-check' == $step ) {
 	$wpdb = new wpdb($username, $password, $database, $hostname);
+	$wpdb->hide_errors();
 	
 	$prefix_test = $wpdb->set_prefix($prefix);
 	$installed = $wpdb->get_var( "SELECT option_value FROM $wpdb->options WHERE option_name = 'siteurl'" );

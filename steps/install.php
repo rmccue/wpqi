@@ -54,7 +54,7 @@ echo '<p>Removing Temporary Download files.. ';
 if ( unlink($download_file) )
 	echo '<strong>Success!</strong>';
 else
-	echo '<strong>Failure</strong>.. Please ensure that <code>' . $download_file . '</code> has been removed';
+	echo '<strong>Failure</strong>.. Please ensure that <code>' . $download_file . '</code> file has been removed';
 echo '</p>';
 
 //Create our wp-config.php file
@@ -63,16 +63,21 @@ echo '<p>Creating <code>wp-config.php</code>, seting Database credentials and ge
 $sample = file_get_contents( trailingslashit(ABSPATH . $config['destination']) . 'wp-config-sample.php');
 
 $required_wp_config_defines = array('AUTH_KEY' => null, 'SECURE_AUTH_KEY' => null, 'LOGGED_IN_KEY' => null, 'NONCE_KEY' => null,
+									'AUTH_SALT' => null, 'SECURE_AUTH_SALT' => null, 'LOGGED_IN_SALT' => null, 'NONCE_SALT' => null, 
 									'DB_NAME' => null, 'DB_USER' => '', 'DB_PASSWORD' => null, 'DB_HOST' => null);
+
 if ( in_array('pretty-permalinks', $config['options']) )
 	$required_wp_config_defines['WP_DEBUG'] = true;
+
+if ( in_array('enable-multisite', $config['options']) )
+	$required_wp_config_defines['WP_ALLOW_MULTISITE'] = true;
 
 //If a define doesnt exist already, Better add it to the file.. Best to be secure.
 //Note: We do NOT care about the value at this stage, This is mearly a placeholder setup, The next function(_install_replace_constant) will fill the constant value in.
 //The Build script doesnt check to see if comments and php openers are in a string or not, Which is why the following code has string breaks.
 foreach ( $required_wp_config_defines as $_define => $_value )
 	if ( ! preg_match("!define\('" . preg_quote($_define, '!') . "'!ix", $sample) )
-		$sample = str_replace('<'.'?php', "<"."?php\r\ndefine('$_define', false);/"."/Added by WordPress QI automatically.\n", $sample);
+		$sample = str_replace('<'.'?php', "<"."?php\r\ndefine('$_define', false); /"."/ Added by WordPress QI automatically.\n", $sample);
 
 function _install_replace_constant($matches) {
 	global $config, $required_wp_config_defines;
@@ -94,6 +99,10 @@ function _install_replace_constant($matches) {
 		case 'SECURE_AUTH_KEY':
 		case 'LOGGED_IN_KEY':
 		case 'NONCE_KEY':
+		case 'AUTH_SALT':
+		case 'SECURE_AUTH_SALT':
+		case 'LOGGED_IN_SALT':
+		case 'NONCE_SALT':
 			$replacement = wp_generate_password(64, true);
 			break;
 		default:
@@ -187,7 +196,10 @@ if ( $details )
 else
 	echo '<strong>Failure</strong> - The install may not have completed correctly. You have been warned, But attempting to continue anyway.</p>';
 	
-if ( ! $details ) var_dump(substr($requested_url, 0, strpos($requested_url, '?')) . '?step=install-wordpress', $data, $post_data);
+if ( ! $details ) {
+	var_dump(substr($requested_url, 0, strpos($requested_url, '?')) . '?step=install-wordpress', $data, $post_data);
+	echo $data['body'];
+}
 
 //Delete our config.php file about here..
 echo '<p>Removing Installer Configuration file... ';

@@ -4,6 +4,7 @@
  * Note: Most of these functions/constants are only used for stubful purpose. More full functions later in the file however.
  */
 
+function is_multisite() { return false; }
 function __($s) { return $s; }
 function _e($s) { echo $s; }
 function do_action() {}
@@ -27,6 +28,8 @@ function update_option() { return false; }
 function screen_icon() {}
 function esc_attr($s) { return $s; }
 function esc_attr_e($s) { echo $s; }
+
+function wp_die($e) { die($e); }
 
 function checked($a, $b) { if ( $a == $b ) echo ' checked="checked"'; }
 

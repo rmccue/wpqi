@@ -20,7 +20,7 @@ if ( isset($config['user']) ) {
 		}
 	} else {
 		//Still have a valid user logged in.. possibly..
-		if ( ! isset($_COOKIE['wpauto']) || $config['user']['cookie'] != $_COOKIE['wpauto'] ) { //If not actually logged in.. Or doesnt have the right cookie..
+		if ( ! isset($_COOKIE['wpqi']) || $config['user']['cookie'] != $_COOKIE['wpqi'] ) { //If not actually logged in.. Or doesnt have the right cookie..
 			the_header();
 			echo '<p>Your Cookie is Fail. If this is incorrect, Please ensure that cookies are enabled in your browser. If you\'ve attempted this install already, You may delete the <code>config.php</code> file which has been created in the same folder as this to restart the installation.</p>';
 			echo '</body></html>';
@@ -29,7 +29,7 @@ if ( isset($config['user']) ) {
 	}
 }
 $hash = isset($config['user']['cookie']) ? $config['user']['cookie'] : md5(time() . microtime());
-setcookie('wpauto', $hash, time() + 5*15*60);
+setcookie('wpqi', $hash, time() + 5*15*60);
 
 $config['user'] = array('time' => time() + 5*15*60, 'cookie' => $hash); //TODO decrease timeout to 45m instead of 5h for release.
 
@@ -56,8 +56,5 @@ function delete_config() {
 	if ( ! is_object($wp_filesystem) && ! WP_Filesystem($config['fs'], ABSPATH) )
 		return false;
 
-	if ( $wp_filesystem->delete( ABSPATH . 'config.php' ) )
-		return true;
-	else
-		return @unlink(ABSPATH . 'config.php'); //Purely just in case?
+	return ( $wp_filesystem->delete( ABSPATH . 'config.php' ) ) ||  @unlink(ABSPATH . 'config.php');
 }

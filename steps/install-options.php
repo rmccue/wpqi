@@ -1,55 +1,27 @@
 <?php
-//Note, this file has unset()'s after most loops, this was mainly done during development to ween out the use of variables in loops that are used elsewhere, the unset() makes it much more obvious about the variable use to me.
 if ( empty($config['db']) || empty($config['fs']) ) {
 	header("Location: {$PHP_SELF}");
 	exit;
 }
 
-if ( isset($config['api']) && !empty($config['api']) ) {
-	$api = $config['api'];
-} else {
-	$api = wp_remote_get('http://api.wpquickinstall.com/version-api/', array('timeout' => 10));
-	if ( ! is_wp_error($api) && $api && !empty($api['body']) && 200 == $api['response']['code'] ) {
-		$api = @unserialize($api['body']);
-		if ( $api ) {
-			$config['api'] = $api;
-		}
-	}
-}
-
-if ( !$api || is_wp_error($api) )
-	$api = array('versions' => array(), 'langs' => array( 'en_US' => array('latest' => array('language' => 'API Down: Latest English Release Only.', 'lang' => 'en_US', 'download' => 'http://wordpress.org/latest.zip', 'homepage' => 'http://wordpress.org/') ) ) );
-
-foreach ( array('title' => '', 'email' => '', 'tagline' => '', 'lang' => $the_guessed_language) as $field => $default )
+foreach ( array('title' => '', 'email' => '', 'tagline' => '', 'release' => '', 'lang' => $the_guessed_language) as $field => $default )
 	$$field = isset($_REQUEST[$field]) ? $_REQUEST[$field] : $default;
-
-if ( ! isset($api['langs'][ $lang ]) )
-	$lang = 'en_US';
-
-//TODO: I believe theres a sorting bug below somewhere..
-function _stable_versions_filter($a) { //Callback filter for below filter.
-	return !preg_match("|[^0-9\.]|", $a);
-}
-$tmp_vers = array_keys($api['langs'][$lang]);
-$tmp_vers = array_filter($tmp_vers, '_stable_versions_filter' ); //Figure out which ones are stable releases, and lets use the latest :)
-
-$version = isset($_REQUEST['version']) && !empty($api['langs'][$lang][$_REQUEST['version']]) ? $_REQUEST['version'] : (count($tmp_vers) ? max($tmp_vers) : '');
 
 $selected_options = ('install-options-check' == $step) ? (isset($_POST['options']) ? array_keys($_POST['options']) : array()) : array('create-default-objects', 'allow-search-engines','pretty-permalinks');
 
-unset($tmp_vers);
-
 $errors = array();
 if ( 'install-options-check' == $step ) {
-	if ( !empty($api['langs'][$lang][$version]['package']) )
-		$config['package'] = $api['langs'][$lang][$version]['package'];
+	$config['package'] = $release;
 	$config['title'] = $title;
 	$config['email'] = $email;
 	$config['tagline'] = $tagline;
 
-	if ( empty($config['package']) ) $errors[] = 'package';
-	if ( empty($title) ) $errors[] = 'title';
-	if ( !preg_match('|.+@.+|', $email) ) $errors[] = 'email';
+	if ( empty($config['package']) )
+		$errors[] = 'package';
+	if ( empty($title) )
+		$errors[] = 'title';
+	if ( !preg_match('|.+@.+|', $email) )
+		$errors[] = 'email';
 	
 	$config['destination'] = ''; //Compressed Release build will install to CWD
 	if ( ! defined('COMPRESSED_BUILD') || !COMPRESSED_BUILD )
@@ -65,78 +37,58 @@ if ( 'install-options-check' == $step ) {
 	}
 }
 
+$api = wp_remote_get('http://api2.wpquickinstall.com/version-api/api.php', array('timeout' => 10));
+if ( ! is_wp_error($api) && $api && !empty($api['body']) && 200 == $api['response']['code'] ) {
+	$api = @unserialize($api['body']);
+}
+
+if ( !$api || is_wp_error($api) )
+	$api = array('en_US' => array( 'version' => 'Latest', 'language' => 'English', 'language_code' => 'en_US', 'stable' => true, 'download_url' => 'http://wordpress.org/latest.zip') );
+
+if ( ! isset($api[$lang]) )
+	$lang = 'en_US';
+
+$version = isset($_REQUEST['version']) && !empty($api[$lang][$_REQUEST['version']]) ? $_REQUEST['version'] : key($api[$lang]);
+
 the_header('install-options');
 ?><h1>Almost done</h1>
 <p>Alright &ndash; Nearly there, Lets just choose some defaults for your WordPress Installation</p>
 
 <script type="text/javascript">
-<!--
-var versions = [];
-<?php
-foreach ( $api['versions'] as $the_version => $text )
-	echo "versions['$the_version'] = '$text';\n";
-unset($the_version, $text);
-?>
-var lang_to_version = [];
-<?php
-foreach ( $api['langs'] as $the_lang => $lang_versions ) {
-	echo "lang_to_version['$the_lang'] = [";
-	$keys = array_keys($lang_versions);
-	foreach ( $keys as $item )
-		echo "'$item'" . (end($keys) != $item ? ',' : '');
-	echo "];\n";
-}
-unset($the_lang, $lang_versions);
-?>
-function switch_lang(lang_select) {
-	var v = lang_select.value;
-	var sel = document.getElementById('version-select');
-	while ( sel.options.length > 0 ) //empty it first.
-		sel.remove(0);
-	for (var i = 0; i < lang_to_version[v].length; i++)
-		sel.options[sel.options.length] = new Option(versions[ lang_to_version[v][i] ], lang_to_version[v][i], false, false);
-	
-	sel.disabled = ( lang_to_version[v].length == 1 );
-	
-}
 function show_language_options() {
-	if ( document.getElementById('language-nag') )
-		document.getElementById('language-nag').parentNode.removeChild(document.getElementById('language-nag'));
-	document.getElementById('language-options').style.display = 'block';
+	document.getElementById('release-options').style.display = 'block';
 }
--->
+function update_release(selectid) {
+	document.getElementById('release-options').style.display = 'hidden';
+
+	for ( var i=0; i <= selectid.length; i++) {
+		if ( selectid.value == selectid.options[i].value) {
+			document.getElementById('wordpress-install-version').innerHTML = selectid.options[i].text;
+			break;
+		}
+	}
+}
 </script>
 <form method="post" action="?step=install-options-check">
-<p><strong>Currently Installing WordPress <?php 
-	echo 	!empty($api['langs'][ $lang ][ $version ]['language']) ? $api['langs'][ $lang ][ $version ]['language'] : $lang, ' ',
-			isset($api['versions'][$version]) ? $api['versions'][$version] : $version ?>. <a href="?step=install-options&select-version=true" onclick="show_language_options(); return false;">(change)</a></strong>
-<?php if ( ! isset($_GET['select-version']) && count($api['langs']) > 1 && $lang == 'en_US' ) echo '<span id="language-nag"><br /><small>A total of ' . count($api['langs']) . ' different languages available, Try WordPress in <em>your</em> language <strong>now!</strong></small></span>' ?>
+<p><strong>Currently Installing WordPress <span id="wordpress-install-version"><?php 
+	echo $version;
+	echo ' ';
+	echo $api[$lang][$version]->language;
+			?></span>. <a href="?step=install-options&select-release=true" onclick="show_language_options(); return false;">(change)</a></strong>
 </p>
-<p id="language-options" class="<?php if ( ! isset($_GET['select-version']) ) echo 'hidden' ?>"><label for="lang" class="hidden">Language:</label>
-<select name="lang" id="lang-select" class="half-width" onchange="switch_lang(this)">
+<p id="release-options" class="<?php if ( ! isset($_GET['select-release']) ) echo 'hidden' ?>"><label for="lang" class="hidden">Release:</label>
+<select name="release" id="release-select" onchange="update_release(this)">
+
 	<?php
-		foreach ( (array)$api['langs'] as $the_lang => $item ) :
-			$vers = array_keys($item);
-			$title = !empty($item[ $vers[0] ]['language']) ? $item[ $vers[0] ]['language'] : '(Unknown) ' . $item[ $vers[0] ]['lang'];
-			$title .= ' ';
-			$title .= '(' . implode(', ', $vers) . ')';
-	?>
-		<option value="<?php echo $the_lang ?>" <?php if ( $lang == $the_lang ) echo 'selected="selected"' ?>><?php echo $title  ?></option>
-	<?php
+		foreach ( (array)$api as $the_lang => $versions ) :
+			foreach ( $versions as $the_version ) :
+		?>
+		<option value="<?php echo $the_version->download_url ?>" <?php if ( $the_lang == $lang && $the_version->version == $version ) echo 'selected="selected"'; ?>><?php echo $the_version->language . ' - ' . $the_version->version; ?></option>
+
+		<?php
+			endforeach;
 		endforeach;
-		unset($the_lang, $item, $vers, $title);
-	?>
-</select>
-<label for="version" class="hidden">Version:</label>
-<select name="version" class="half-width" id="version-select" <?php if ( count($api['langs'][$lang]) <= 1 ) echo 'disabled="disabled"' ?> <?php if ( in_array('package', $errors) ) echo '  class="error"' ?> >
-	<?php 
-		foreach ( array_keys($api['langs'][$lang]) as $the_version ) :
-			$text = isset($api['versions'][$the_version]) ? $api['versions'][$the_version] : $the_version;
-	?>
-	<option value="<?php echo $the_version ?>" <?php if ( $version == $the_version ) echo 'selected="selected"' ?>><?php echo $text ?></option>
-	<?php
-		endforeach;
-		unset($text, $the_version);
+		unset($the_lang, $versions, $version);
 	?>
 </select>
 </p>
@@ -163,10 +115,11 @@ if ( ! defined('COMPRESSED_BUILD') || !COMPRESSED_BUILD )
 	<legend>Install Options</legend>
 <?php
 	$options = array(
-				'create-default-objects' => 'Create Example Posts, Posts, Links and Comments',
+				'create-default-objects' => 'Create Example Posts, Pages, Links and Comments',
 				'allow-search-engines' => 'Allow this Installation to appear in Search Engines.',
 				'pretty-permalinks' => 'Enable <em>Pretty Permalinks</em> by default.',
-				'debug-install' => 'Enable Development mode on the WordPress Install.'
+				'debug-install' => 'Enable Development mode on the WordPress Install.',
+				'enable-multisite' => 'Enable Multisite Installation support'
 				);
 	foreach ( $options as $option => $text ) :
 ?>

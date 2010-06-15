@@ -14,7 +14,6 @@ if ( 'install-wordpress' == $step ) {
 		exit;
 	}
 	define('WP_INSTALLING', true);
-	define('WP_DEBUG', true);//!defined('COMPRESSED_BUILD') || !COMPRESSED_BUILD); //For Debug only.
 	// This is seen as hacky by some, But its got a useful use.
 	// Start output buffering so as to ensure that when WE echo the serialized data, it IS the only output.. none of these PHP Deprecated errors under PHP 5.3 please!
 	ob_start();
@@ -30,8 +29,12 @@ if ( !defined('WP_MEMORY_LIMIT') )
 if ( function_exists('memory_get_usage') && ( (int) @ini_get('memory_limit') < abs(intval(WP_MEMORY_LIMIT)) ) )
 	@ini_set('memory_limit', WP_MEMORY_LIMIT);
 
-error_reporting(E_ALL);
+if ( defined( 'E_DEPRECATED' ) )
+	error_reporting( E_ALL & ~E_DEPRECATED & ~E_STRICT );
+else
+	error_reporting( E_ALL );
 @ini_set('display_errors', 1);
+define('QI_DEBUG', false);
 
 include 'steps/header.php';
 include 'steps/footer.php';
@@ -45,6 +48,7 @@ if ( file_exists('./db.php') ) {
 	include 'wp-files/wp-includes/wp-db.php';
 }
 include 'wordpress-functions.php';
+include 'wp-files/wp-includes/class-http.php';
 include 'wp-files/wp-includes/http.php';
 include 'wp-files/wp-admin/includes/class-wp-filesystem-base.php';
 include 'wp-files/wp-admin/includes/class-wp-filesystem-direct.php';

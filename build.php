@@ -35,6 +35,9 @@ function _replace_include($matches) {
 		return '';
 	}
 	$file = _strip_php_openers(file_get_contents($filename));
+	//Next, Replace WP_DEBUG with QI_DEBUG in WORDPRESS FILES ONLY
+	if ( strpos($filename, 'wp-files') !== false )
+		$file = str_replace('WP_DEBUG', 'QI_DEBUG', $file);
 	$file = preg_replace_callback('#(?<!/\*BuildIgnoreInclude\*/)(include|require|include_once|require_once)((\(.*?["\'](.+)["\']\s*\))|\s*["\'](.+)["\']);#i', '_replace_include', $file);
 	return "\n" . $file . "\n";
 }
@@ -53,7 +56,10 @@ function _get_requirements_notice() {
 	return "\nif(!function_exists('gzuncompress')||!function_exists('base64_decode'))die('This script requires for the functions <code>gzuncompress()</code>, <code>base64_decode</code> and <code>eval()</code> to be available. Your current hosting does not allow one or more of these functions. Please try a Minified Build instead.');\n"; //TODO: Eval doesnt seem to play nice here.
 }
 
-file_put_contents('release/installer-nonminimised.php', '<?php ' . _get_resources() . $out_contents);
+//file_put_contents('release/installer-nonminimised.php', '<?php ' . _get_resources() . $out_contents);
+
+//echo 'Non-minimised build created, Exiting.';
+//die();
 
 //Remove any comments
 $out_contents = preg_replace('!(/\*Build\S+?\*/)|(/\*.+?\*/)!is', '$1', $out_contents); //Remove Multiline comments, Leaving  special Build commands.
@@ -183,7 +189,7 @@ for ( $i = 0; $i < $count; $i++) {
 	//TODO Add a branch here to strip it out when its inside a PHP string..
 }
 
-file_put_contents('release/installer-uncompressed.php', '<?php ' . _get_resources() . $out_contents);
+//file_put_contents('release/installer-uncompressed.php', '<?php ' . _get_resources() . $out_contents);
 
 //Final touches.. This is done to allow for functions to be defined in a later eval() block to allow for WP inclusion directly by compressed content.
 $chunks = explode('/*BuildCompressSplit*/', $out_contents);
@@ -192,3 +198,4 @@ foreach ( $chunks as $chunk )
 	$out_contents .= "\n" . 'eval(gzuncompress(base64_decode("' . base64_encode(gzcompress($chunk, 9)) . '")));';
 
 file_put_contents('release/installer.php', $out_contents);
+echo "Done";
