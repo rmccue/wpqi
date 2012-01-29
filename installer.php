@@ -73,17 +73,6 @@ switch ( $step ) {
 	case 'ftp-detail-check':
 		include 'steps/fs.php';
 		break;
-	case 'db-details':
-	case 'db-detail-check':
-		include 'steps/db.php';
-		break;
-	case 'install-options':
-	case 'install-options-check':
-		include 'steps/install-options.php';
-		break;
-	case 'install':
-		include 'steps/install.php';
-		break;
 	case 'download-options':
 	case 'download-options-check':
 		include 'steps/download-options.php';

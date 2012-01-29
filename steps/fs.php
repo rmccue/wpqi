@@ -36,7 +36,7 @@ if ( 'ftp-detail-check' == $step || 'direct' == get_filesystem_method() ) {
 		$config['fs'] = $credentials;
 
 		write_config();
-		header("Location: {$PHP_SELF}?step=db-details");
+		header("Location: {$PHP_SELF}?step=download-options");
 		exit;
 	}
 	$errors[] = 'credentials';
