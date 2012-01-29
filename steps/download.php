@@ -22,8 +22,11 @@ if ( !$api || is_wp_error($api) || (isset($api['response']['code']) && $api['res
 $path = isset($_REQUEST['path']) ? $_REQUEST['path'] : 'wordpress';
 
 the_header('download');
-echo '<h2>Downloading&hellip;</h2>';
+?>
 
+<p>Beginning download</p>
+
+<?php
 $requested_url  = ( !empty($_SERVER['HTTPS'] ) && strtolower($_SERVER['HTTPS']) == 'on' ) ? 'https://' : 'http://';
 $requested_url .= $_SERVER['HTTP_HOST'];
 $requested_url .= $_SERVER['REQUEST_URI'];

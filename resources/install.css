@@ -3,7 +3,10 @@ html { background: #f7f7f7; }
 body {
 	background: #fff;
 	color: #333;
-	font-family: "Lucida Grande", Verdana, Arial, "Bitstream Vera Sans", sans-serif;
+	font-family: sans-serif;
+	font-size: 14px;
+	line-height: 1.5;
+
 	margin: 2em auto 0 auto;
 	width: 700px;
 	padding: 1em 2em;
@@ -52,15 +55,13 @@ h2 {
 
 p, li {
 	padding-bottom: 2px;
-	font-size: 12px;
-	line-height: 18px;
 }
 
 code { font-size: 13px; }
 
 ul, ol { padding: 5px 5px 5px 22px; }
 
-#logo { margin: 6px 0 14px 0; border-bottom: none;}
+#logo { margin: 6px 0 14px 0; border-bottom: none; text-align: center;}
 
 .submit input, .button, .button-secondary {
 	font-family: "Lucida Grande", Verdana, Arial, "Bitstream Vera Sans", sans-serif;
@@ -102,7 +103,6 @@ p.error input {
 }
 
 label {
-	font-style:italic;
 	font-weight: bold;
 }
 fieldset label {
@@ -117,7 +117,7 @@ fieldset.no-border {
 input[type=text], input[type=textarea], input[type=password], select {
 	width: 100%;
 	background-color: #f3f3f3;
-	border: 1px solid #000;
+	border: 1px solid #DFDFDF;
 	padding: 0.5em;
 	font-size: 1.3em;
 }
