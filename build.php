@@ -60,13 +60,6 @@ $out_contents = preg_replace_callback('#(?<!/\*BuildIgnoreInclude\*/)(include|re
 //echo 'Non-minimised build created, Exiting.';
 //die();
 
-//Remove any comments
-$out_contents = preg_replace('!(/\*Build\S+?\*/)|(/\*.+?\*/)!is', '$1', $out_contents); //Remove Multiline comments, Leaving  special Build commands.
-$out_contents = preg_replace('#^\s*//.*#im', '', $out_contents);
-$out_contents = preg_replace('#([;{}(),])\s*//.*#i', '$1', $out_contents);
-$out_contents = preg_replace('#((case|default)\s*.*?\s*:)\s*//.*#i', '$1', $out_contents);
-$out_contents = preg_replace('#(else)\s*//.*#i', '$1', $out_contents); //Separate from the above to protect it from eating your babies.
-
 //Time to set the Build Date and Revision.
 $date = date('d/M/Y');
 $revision = '';
@@ -86,107 +79,37 @@ $out_contents = preg_replace('!(/\*BuildRemoveStart\*/.+?/\*BuildRemoveEnd\*/)!i
 //Remove non-needed Build* markers.
 $out_contents = str_replace( array('/*BuildIgnoreInclude*/'), '', $out_contents);
 
-//Next, Remove any whitespace thats not needed from within PHP code
-$in_field = false;
-$in_php = true;
-$oca = preg_split('||', $out_contents, -1, PREG_SPLIT_NO_EMPTY);
-$count = count($oca);
-$unset = array();
-
-for ( $i = 0; $i < $count; $i++) {
-    $value = $oca[$i];
-
-    //PHP Block is starting again.
-    if ( true !== $in_php && substr($out_contents, $i, strlen('<?php')) == '<?php' ) {
-        $i += 4;
-        $in_php = true;
-    }
-    //PHP Block has ended.
-    if ( ! $in_field && true === $in_php && $value == '?' &&  $i < $count && $oca[$i+1] == '>' ) {
-        $i++;
-        $in_php = $i;
+// Compress whitespace down to a single space and strip comments
+$tokens = token_get_all('<?php ' . $out_contents);
+$result = '';
+foreach ($tokens as $token) {
+    if (is_string($token)) {
+        $result .= $token;
         continue;
     }
 
-    if ( true !== $in_php )
-        continue;
-
-    //End of an enclosed string
-    if ( $value === $in_field && ($oca[$i-1] != '\\' || $oca[$i-2] == '\\') ) {
-		//TODO well we bettter remove any whitespace around any html tags in the values IMO.....
-        $in_field = false;
-        continue;
-    }
-    if ( $in_field )
-        continue;
-    //detect start of enclosed string.
-    if ( in_array($value, array('"', "'")) ) {
-        $in_field = $value;
-        continue;
-    }
-
-    $is_whitespace = $in_php && preg_match('|^\s+$|', $value);
-    continue;
-
-    if ( $is_whitespace ) {
-        //Make sure theres some whitespace after PHP lang items.
-        foreach ( array('<?php', 'function', 'class', 'var', 'return', 'else', 'case', 'echo', 'new', 'and', 'or', 'global', 'include', 'require', 'include_once', 'require_once') as $item ) {
-            if ( $i < strlen($item) )
-                continue;
-            if ( $item == substr($out_contents, $i-strlen($item), strlen($item)) ) {
-                $oca[$i] = ' '; //Make sure its a space.. not just whitespace :)
-				//$i += strlen($item);
-				if ( $item == 'and' || $item == 'or' )
-					array_pop($unset);
-                continue 2;
+    switch ($token[0]) {
+        // Strip comments and PHPDoc comments
+        case T_DOC_COMMENT:
+        case T_COMMENT:
+            if (strpos($token[1], 'BuildCompressSplit') !== false) {
+                $result .= $token[1];
             }
-        }
-        //Need whitespace around 'as' in foreach construct
-        if ( preg_match('|foreach.+ as$|', substr($out_contents, $i - ($i>50?50:$i), 50)) ) {
-            $i++;
-            array_pop($unset);
-            continue;
-        }
-        //Need whitespace around 'extends' in class declaration
-        if ( preg_match('|class.+ extends$|', substr($out_contents, $i - ($i>50?50:$i), 50)) ) {
-            $i += 1;
-            array_pop($unset);
-            continue;
-        }
+            break;
+
+        case T_WHITESPACE:
+            $result .= ' ';
+            break;
+
+        case T_INLINE_HTML:
+            $token[1] = preg_replace('|>\s+<|m', '><', $token[1]);
+            // fall-through
+        default:
+            $result .= $token[1];
+            break;
     }
-
-    if ( $is_whitespace )
-        $unset[] = $i;
-
 }
-foreach ( $unset as $i )
-    unset($oca[$i]);
-$out_contents = implode('', $oca);
-unset($in_field, $oca, $count, $unset);
-
-//Next, Strip Whitespace from the HTML in the file:
-
-$in_html = false;
-$count = strlen($out_contents);
-for ( $i = 0; $i < $count; $i++) {
-	//PHP Block is starting again.
-	if ( $in_html && substr($out_contents, $i, 5) == '<?php' ) {
-		$test_string1 = substr($out_contents, $in_html, $i-$in_html+1);
-		$test_string2 = preg_replace('|>\s+<|m', '><', $test_string1);
-		if ( $test_string1 != $test_string2 ) {
-			$out_contents = substr($out_contents, 0, $in_html) . $test_string2 . substr($out_contents, $i+1);
-			$count = strlen($out_contents);
-			$i = $in_html; //Reset back to start.
-		}
-		$in_html = false;
-	}
-	//HTML Block has ended.
-	if ( !$in_html && $out_contents{$i} == '?' && $out_contents{$i+1} == '>' ) {
-		$i++;
-		$in_html = $i;
-	}
-	//TODO Add a branch here to strip it out when its inside a PHP string..
-}
+$out_contents = substr($result, 6);
 
 //file_put_contents('release/installer-uncompressed.php', '<?php ' . _get_resources() . $out_contents);
 
