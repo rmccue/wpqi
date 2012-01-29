@@ -19,10 +19,15 @@ a { color: #2583ad; text-decoration: none; }
 a:hover { color: #d54e21; }
 
 #footer {
-	float: right;
-	font-size: 0.7em;
+	text-align: right;
+	font-size: 10px;
 	color:#999;
 }
+	#footer p {
+		font-size: 10px;
+		margin: 0;
+		padding: 0;
+	}
 
 h1, h2 {
 	border-bottom: 1px solid #dadada;

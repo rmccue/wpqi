@@ -65,17 +65,13 @@ $out_contents = preg_replace_callback('#(?<!/\*BuildIgnoreInclude\*/)(include|re
 //die();
 
 //Time to set the Build Date and Revision.
-$date = date('d/M/Y');
+$date = date('Y-m-d');
 $revision = '';
-if ( file_exists(dirname(__FILE__) . '/.svn/entries') ) {
-	$r_parts = file(dirname(__FILE__) . '/.svn/entries');
-	$revision = intval($r_parts[3]);
-	if ( $revision )
-		$revision = '<abbr title="Revision ' . $revision . '">r' . $revision . '</abbr>';
-	unset($r_parts);
+if ( file_exists(dirname(__FILE__) . '/.git/HEAD') ) {
+    $revision = trim(exec('git rev-parse --short HEAD'));
+    $out_contents = preg_replace('#\$wpqi_version = \'([^\']+)\';#', '$wpqi_version = \'$1-' . $revision . '\';', $out_contents);
 }
 $out_contents = str_replace('/*BuildDate*/', $date, $out_contents);
-$out_contents = str_replace('/*BuildRevision*/', $revision, $out_contents);
 
 //Remove any 'RemoveMe' blocks
 $out_contents = preg_replace('!(/\*BuildRemoveStart\*/.+?/\*BuildRemoveEnd\*/)!is', '', $out_contents);
