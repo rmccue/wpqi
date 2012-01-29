@@ -14,7 +14,14 @@
 
 <form action="" method="POST">
 	<input type="hidden" name="step" value="download" />
-	<input type="hidden" />
+
+	<p>
+		<label for="path">Path to WordPress</label>
+		<input type="text" name="path" value="wordpress/" size="25" id="path" />
+		If you want to install WordPress into a subdirectory, specify that here.
+		Leave blank to install to this directory.
+	</p>
+
 	<p class="step"><input type="submit" class="button" value="Let&#8217;s go!" /></p>
 </form>
 

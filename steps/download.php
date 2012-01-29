@@ -53,7 +53,9 @@ function _install_tick($args) {
 	}
 }
 
-$res = unzip_file($download_file, ABSPATH . '/wordpress', '_install_tick');
+$path = isset($_REQUEST['path']) ? $_REQUEST['path'] : 'wordpress';
+
+$res = unzip_file($download_file, ABSPATH . '/' . $path, '_install_tick');
 if ( is_wp_error($res) ) {
 	$error = $res->get_error_message();
 	$data = $res->get_error_data();

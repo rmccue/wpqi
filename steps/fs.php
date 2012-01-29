@@ -15,6 +15,7 @@ extract($credentials);
 	<?php if ($errors) echo '<p><strong>There are some errors with your input. Please check the highlighted fields below.</strong></p>'; ?>
 
 	<input type="hidden" name="step" value="download" />
+	<input type="hidden" name="path" value="<?php echo $_REQUEST['path'] ?>" />
 	<input type="hidden" name="checking" value="fs" />
 
 	<p>
