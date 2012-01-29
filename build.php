@@ -9,52 +9,51 @@
  */
 
 set_time_limit(0);
-$in = 'installer.php';
-
-$out_contents = 'define("COMPRESSED_BUILD", true); ' . _strip_php_openers(file_get_contents($in));
 
 function _strip_php_openers($file) {
 	$file = preg_replace('#^\s*<\?php\s*#is', '', $file);
 	return preg_replace('#\s*\?>\s*$#is', '', $file);
 }
 
-//var_dump( preg_match('#(include|require|include_once|require_once)\s*\(?\s*(["\'])(.+)\\2;#', $out_contents, $matches), $matches);
-
-//First, Replace includes.
-$out_contents = preg_replace_callback('#(?<!/\*BuildIgnoreInclude\*/)(include|require|include_once|require_once)((\(.*?["\'](.+?)["\']\s*\))|\s*["\'](.+)["\']);#i', '_replace_include', $out_contents);
-
 function _replace_include($matches) {
-	$filename = isset($matches[5]) ? $matches[5] : $matches[4];
+    $filename = isset($matches[5]) ? $matches[5] : $matches[4];
 
-	$known_missing_includes = array('class-ftp-".($mod_sockets?"sockets":"pure").".php');
+    $known_missing_includes = array('class-ftp-".($mod_sockets?"sockets":"pure").".php');
 
-	if ( !file_exists($filename) ) {
-		if ( ! isset($_REQUEST['quiet']) )
-			if ( !in_array($filename, $known_missing_includes) ) 
-				echo '<p><strong>Warning:</strong> <code>' . $filename . '</code> does not exist</p>';
-		return '';
-	}
-	$file = _strip_php_openers(file_get_contents($filename));
-	//Next, Replace WP_DEBUG with QI_DEBUG in WORDPRESS FILES ONLY
-	if ( strpos($filename, 'wp-files') !== false )
-		$file = str_replace('WP_DEBUG', 'QI_DEBUG', $file);
-	$file = preg_replace_callback('#(?<!/\*BuildIgnoreInclude\*/)(include|require|include_once|require_once)((\(.*?["\'](.+)["\']\s*\))|\s*["\'](.+)["\']);#i', '_replace_include', $file);
-	return "\n" . $file . "\n";
+    if ( !file_exists($filename) ) {
+        if ( ! isset($_REQUEST['quiet']) )
+            if ( !in_array($filename, $known_missing_includes) ) 
+                echo '<p><strong>Warning:</strong> <code>' . $filename . '</code> does not exist</p>';
+        return '';
+    }
+    $file = _strip_php_openers(file_get_contents($filename));
+    //Next, Replace WP_DEBUG with QI_DEBUG in WORDPRESS FILES ONLY
+    if ( strpos($filename, 'wp-files') !== false )
+        $file = str_replace('WP_DEBUG', 'QI_DEBUG', $file);
+    $file = preg_replace_callback('#(?<!/\*BuildIgnoreInclude\*/)(include|require|include_once|require_once)((\(.*?["\'](.+)["\']\s*\))|\s*["\'](.+)["\']);#i', '_replace_include', $file);
+    return "\n" . $file . "\n";
 }
 
 function _get_resources() {
-	$all = glob('resources/*');
-	$reses = '$resources = array();';
-	foreach ( $all as $res ) {
-		$res = str_replace('resources/', '', $res);
-		$reses .= '$resources["' . $res . '"] = "' . base64_encode(gzcompress( file_get_contents('resources/' . $res), 9 )) . '";' . "\n";
-	}
-	return $reses;
+    $all = glob('resources/*');
+    $reses = '$resources = array();' . "\n";
+    foreach ( $all as $res ) {
+        $res = str_replace('resources/', '', $res);
+        $reses .= '$resources["' . $res . '"] = "' . base64_encode(gzcompress( file_get_contents('resources/' . $res), 9 )) . '";' . "\n";
+    }
+    return $reses;
 }
 
 function _get_requirements_notice() {
-	return "\nif(!function_exists('gzuncompress')||!function_exists('base64_decode'))die('This script requires for the functions <code>gzuncompress()</code>, <code>base64_decode</code> and <code>eval()</code> to be available. Your current hosting does not allow one or more of these functions. Please try a Minified Build instead.');\n"; //TODO: Eval doesnt seem to play nice here.
+    return "\nif(!function_exists('gzuncompress')||!function_exists('base64_decode'))die('This script requires for the functions <code>gzuncompress()</code>, <code>base64_decode</code> and <code>eval()</code> to be available. Your current hosting does not allow one or more of these functions. Please try a Minified Build instead.');\n"; //TODO: Eval doesnt seem to play nice here.
 }
+
+
+$in = 'installer.php';
+$out_contents = 'define("COMPRESSED_BUILD", true);' . "\n" . _strip_php_openers(file_get_contents($in));
+
+//First, Replace includes.
+$out_contents = preg_replace_callback('#(?<!/\*BuildIgnoreInclude\*/)(include|require|include_once|require_once)((\(.*?["\'](.+?)["\']\s*\))|\s*["\'](.+)["\']);#i', '_replace_include', $out_contents);
 
 //file_put_contents('release/installer-nonminimised.php', '<?php ' . _get_resources() . $out_contents);
 
@@ -86,7 +85,6 @@ $out_contents = preg_replace('!(/\*BuildRemoveStart\*/.+?/\*BuildRemoveEnd\*/)!i
 
 //Remove non-needed Build* markers.
 $out_contents = str_replace( array('/*BuildIgnoreInclude*/'), '', $out_contents);
-
 
 //Next, Remove any whitespace thats not needed from within PHP code
 $in_field = false;
