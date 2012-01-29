@@ -84,4 +84,11 @@ switch ( $step ) {
 	case 'install':
 		include 'steps/install.php';
 		break;
+	case 'download-options':
+	case 'download-options-check':
+		include 'steps/download-options.php';
+		break;
+	case 'download':
+		include 'steps/download.php';
+		break;
 }
