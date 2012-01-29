@@ -81,7 +81,7 @@ if ( strpos($credentials['hostname'], ':') !== false )
 else
 	unset($credentials['port']);
 
-if ($step !== 'first' && ($step === 'download' || 'directa' == get_filesystem_method())) {
+if ($step !== 'first' && ($step === 'download' || 'direct' == get_filesystem_method())) {
 	$result = WP_Filesystem($credentials, ABSPATH);
 	if ( true === $result ) {
 		$step = 'download';
