@@ -7,20 +7,6 @@ include 'configuration.php';
 include 'functions.php';
 include 'servervars.php';
 
-if ( 'install-wordpress' == $step ) {
-	//Here is where we run the WordPress Installer via the usual process
-	if ( ! isset($config['fs']) && !isset($config['fs']) ) {
-		header("Location: $PHP_SELF");
-		exit;
-	}
-	define('WP_INSTALLING', true);
-	// This is seen as hacky by some, But its got a useful use.
-	// Start output buffering so as to ensure that when WE echo the serialized data, it IS the only output.. none of these PHP Deprecated errors under PHP 5.3 please!
-	ob_start();
-	include dirname(__FILE__) . '/' . rtrim($config['destination'], '/') . '/wp-config.php';
-	include 'steps/install-wordpress.php';
-	exit;
-}
 /*BuildCompressSplit*/
 define('ABSPATH', dirname(__FILE__) . '/');
 if ( !defined('WP_MEMORY_LIMIT') )
@@ -64,24 +50,55 @@ if ( defined('COMPRESSED_BUILD') && COMPRESSED_BUILD ) { //class-ftp includes it
 }
 include 'wp-files/wp-admin/includes/class-wp-filesystem-ftpsockets.php';
 
+$credentials = array(
+	'hostname' => 'localhost',
+	'port' => '21',
+	'username' => $the_guessed_user,
+	'password' => '',
+	'public_key' => '',
+	'private_key' => '',
+	'connection_type' => 'ftp'
+);
+
+$credentials['connection_type'] = !empty($_POST['connection_type']) ? $_POST['connection_type']  : $credentials['connection_type'];
+
+// If defined, set it to that, Else, If POST'd, set it to that, If not, Set it to whatever it previously was(saved details in option)
+$credentials['hostname'] = !empty($_POST['hostname']) ? $_POST['hostname'] : $credentials['hostname'];
+$credentials['username'] = !empty($_POST['username']) ? $_POST['username'] : $credentials['username'];
+$credentials['password'] = !empty($_POST['password']) ? $_POST['password'] : $credentials['password'];
+
+if ( 'ssh' == $credentials['connection_type'] ) {
+	// Check to see if we are setting the public/private keys for ssh
+	$credentials['public_key'] = !empty($_POST['public_key']) ? $_POST['public_key'] : $credentials['public_key'];
+	$credentials['private_key'] = !empty($_POST['private_key']) ? $_POST['private_key'] : $credentials['private_key'];
+}
+
+//sanitize the hostname, Some people might pass in odd-data:
+$credentials['hostname'] = preg_replace('|\w+://|', '', $credentials['hostname']); //Strip any schemes off
+
+if ( strpos($credentials['hostname'], ':') !== false )
+	list( $credentials['hostname'], $credentials['port'] ) = explode(':', $credentials['hostname'], 2);
+else
+	unset($credentials['port']);
+
+if ($step !== 'first' && ($step === 'download' || 'direct' == get_filesystem_method())) {
+	$result = WP_Filesystem($credentials, ABSPATH);
+	if ( true === $result ) {
+		$step = 'download';
+	}
+	else {
+		$step = 'fs-error';
+	}
+}
 switch ( $step ) {
 	default:
 	case 'first':
 		include 'steps/first.php';
 		break;
-	case 'ftp-details':
-	case 'ftp-detail-check':
+	case 'fs-error':
 		include 'steps/fs.php';
 		break;
-	case 'db-details':
-	case 'db-detail-check':
-		include 'steps/db.php';
-		break;
-	case 'install-options':
-	case 'install-options-check':
-		include 'steps/install-options.php';
-		break;
-	case 'install':
-		include 'steps/install.php';
+	case 'download':
+		include 'steps/download.php';
 		break;
 }

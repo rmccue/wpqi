@@ -49,10 +49,14 @@ function _get_requirements_notice() {
 }
 
 
+echo 'Building QI...' . PHP_EOL;
+
 $in = 'installer.php';
 $out_contents = 'define("COMPRESSED_BUILD", true);' . "\n" . _strip_php_openers(file_get_contents($in));
 
-//First, Replace includes.
+
+echo 'Replacing includes' . PHP_EOL;
+
 $out_contents = preg_replace_callback('#(?<!/\*BuildIgnoreInclude\*/)(include|require|include_once|require_once)((\(.*?["\'](.+?)["\']\s*\))|\s*["\'](.+)["\']);#i', '_replace_include', $out_contents);
 
 //file_put_contents('release/installer-nonminimised.php', '<?php ' . _get_resources() . $out_contents);
@@ -61,17 +65,13 @@ $out_contents = preg_replace_callback('#(?<!/\*BuildIgnoreInclude\*/)(include|re
 //die();
 
 //Time to set the Build Date and Revision.
-$date = date('d/M/Y');
+$date = date('Y-m-d');
 $revision = '';
-if ( file_exists(dirname(__FILE__) . '/.svn/entries') ) {
-	$r_parts = file(dirname(__FILE__) . '/.svn/entries');
-	$revision = intval($r_parts[3]);
-	if ( $revision )
-		$revision = '<abbr title="Revision ' . $revision . '">r' . $revision . '</abbr>';
-	unset($r_parts);
+if ( file_exists(dirname(__FILE__) . '/.git/HEAD') ) {
+    $revision = trim(exec('git rev-parse --short HEAD'));
+    $out_contents = preg_replace('#\$wpqi_version = \'([^\']+)\';#', '$wpqi_version = \'$1-' . $revision . '\';', $out_contents);
 }
 $out_contents = str_replace('/*BuildDate*/', $date, $out_contents);
-$out_contents = str_replace('/*BuildRevision*/', $revision, $out_contents);
 
 //Remove any 'RemoveMe' blocks
 $out_contents = preg_replace('!(/\*BuildRemoveStart\*/.+?/\*BuildRemoveEnd\*/)!is', '', $out_contents);
@@ -79,7 +79,9 @@ $out_contents = preg_replace('!(/\*BuildRemoveStart\*/.+?/\*BuildRemoveEnd\*/)!i
 //Remove non-needed Build* markers.
 $out_contents = str_replace( array('/*BuildIgnoreInclude*/'), '', $out_contents);
 
-// Compress whitespace down to a single space and strip comments
+
+echo 'Compressing whitespace and stripping comments' . PHP_EOL;
+
 $tokens = token_get_all('<?php ' . $out_contents);
 $result = '';
 foreach ($tokens as $token) {
@@ -111,15 +113,16 @@ foreach ($tokens as $token) {
 }
 $out_contents = substr($result, 6);
 
-//file_put_contents('release/installer-uncompressed.php', '<?php ' . _get_resources() . $out_contents);
+file_put_contents('release/installer-uncompressed.php', '<?php ' . _get_resources() . $out_contents);
 
 //Final touches.. This is done to allow for functions to be defined in a later eval() block to allow for WP inclusion directly by compressed content.
+echo 'Building compressed' . PHP_EOL;
 $chunks = explode('/*BuildCompressSplit*/', $out_contents);
 $out_contents = '<?php ' . _get_requirements_notice() . _get_resources();
+
 foreach ( $chunks as $chunk ) {
-	//$out_contents .= "\n" . 'eval(gzuncompress(base64_decode("' . base64_encode(gzcompress($chunk, 9)) . '")));';
-    $out_contents .= $chunk;
+	$out_contents .= "\n" . 'eval(gzuncompress(base64_decode("' . base64_encode(gzcompress($chunk, 9)) . '")));';
 }
 
 file_put_contents('release/installer.php', $out_contents);
-echo "Done";
+echo 'Done!' . PHP_EOL;
