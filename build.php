@@ -22,7 +22,7 @@ function _replace_include($matches) {
 
     if ( !file_exists($filename) ) {
         if ( ! isset($_REQUEST['quiet']) )
-            if ( !in_array($filename, $known_missing_includes) ) 
+            if ( !in_array($filename, $known_missing_includes) )
                 echo '<p><strong>Warning:</strong> <code>' . $filename . '</code> does not exist</p>';
         return '';
     }
@@ -62,7 +62,7 @@ $out_contents = preg_replace_callback('#(?<!/\*BuildIgnoreInclude\*/)(include|re
 
 //Remove any comments
 $out_contents = preg_replace('!(/\*Build\S+?\*/)|(/\*.+?\*/)!is', '$1', $out_contents); //Remove Multiline comments, Leaving  special Build commands.
-$out_contents = preg_replace('#^\s*//.*#im', '', $out_contents); 
+$out_contents = preg_replace('#^\s*//.*#im', '', $out_contents);
 $out_contents = preg_replace('#([;{}(),])\s*//.*#i', '$1', $out_contents);
 $out_contents = preg_replace('#((case|default)\s*.*?\s*:)\s*//.*#i', '$1', $out_contents);
 $out_contents = preg_replace('#(else)\s*//.*#i', '$1', $out_contents); //Separate from the above to protect it from eating your babies.
@@ -93,75 +93,75 @@ $oca = preg_split('||', $out_contents, -1, PREG_SPLIT_NO_EMPTY);
 $count = count($oca);
 $unset = array();
 
-for ( $i = 0; $i < $count; $i++) { 
-    $value = $oca[$i]; 
+for ( $i = 0; $i < $count; $i++) {
+    $value = $oca[$i];
 
-    //PHP Block is starting again. 
-    if ( true !== $in_php && substr($out_contents, $i, strlen('<?php')) == '<?php' ) { 
-        $i += 4; 
-        $in_php = true; 
-    } 
-    //PHP Block has ended. 
-    if ( ! $in_field && true === $in_php && $value == '?' &&  $i < $count && $oca[$i+1] == '>' ) { 
-        $i++; 
-        $in_php = $i; 
-        continue; 
-    } 
+    //PHP Block is starting again.
+    if ( true !== $in_php && substr($out_contents, $i, strlen('<?php')) == '<?php' ) {
+        $i += 4;
+        $in_php = true;
+    }
+    //PHP Block has ended.
+    if ( ! $in_field && true === $in_php && $value == '?' &&  $i < $count && $oca[$i+1] == '>' ) {
+        $i++;
+        $in_php = $i;
+        continue;
+    }
 
-    if ( true !== $in_php ) 
-        continue; 
+    if ( true !== $in_php )
+        continue;
 
-    //End of an enclosed string 
-    if ( $value === $in_field && ($oca[$i-1] != '\\' || $oca[$i-2] == '\\') ) { 
-		//TODO well we bettter remove any whitespace around any html tags in the values IMO..... 
-        $in_field = false; 
-        continue; 
-    } 
-    if ( $in_field ) 
-        continue; 
-    //detect start of enclosed string. 
-    if ( in_array($value, array('"', "'")) ) { 
-        $in_field = $value; 
-        continue; 
-    } 
+    //End of an enclosed string
+    if ( $value === $in_field && ($oca[$i-1] != '\\' || $oca[$i-2] == '\\') ) {
+		//TODO well we bettter remove any whitespace around any html tags in the values IMO.....
+        $in_field = false;
+        continue;
+    }
+    if ( $in_field )
+        continue;
+    //detect start of enclosed string.
+    if ( in_array($value, array('"', "'")) ) {
+        $in_field = $value;
+        continue;
+    }
 
-    $is_whitespace = $in_php && preg_match('|^\s+$|', $value); 
+    $is_whitespace = $in_php && preg_match('|^\s+$|', $value);
     continue;
 
-    if ( $is_whitespace ) { 
-        //Make sure theres some whitespace after PHP lang items. 
-        foreach ( array('<?php', 'function', 'class', 'var', 'return', 'else', 'case', 'echo', 'new', 'and', 'or', 'global', 'include', 'require', 'include_once', 'require_once') as $item ) { 
-            if ( $i < strlen($item) ) 
-                continue; 
-            if ( $item == substr($out_contents, $i-strlen($item), strlen($item)) ) { 
-                $oca[$i] = ' '; //Make sure its a space.. not just whitespace :) 
+    if ( $is_whitespace ) {
+        //Make sure theres some whitespace after PHP lang items.
+        foreach ( array('<?php', 'function', 'class', 'var', 'return', 'else', 'case', 'echo', 'new', 'and', 'or', 'global', 'include', 'require', 'include_once', 'require_once') as $item ) {
+            if ( $i < strlen($item) )
+                continue;
+            if ( $item == substr($out_contents, $i-strlen($item), strlen($item)) ) {
+                $oca[$i] = ' '; //Make sure its a space.. not just whitespace :)
 				//$i += strlen($item);
 				if ( $item == 'and' || $item == 'or' )
 					array_pop($unset);
-                continue 2; 
-            } 
-        } 
-        //Need whitespace around 'as' in foreach construct 
-        if ( preg_match('|foreach.+ as$|', substr($out_contents, $i - ($i>50?50:$i), 50)) ) { 
-            $i++; 
-            array_pop($unset); 
-            continue; 
-        } 
-        //Need whitespace around 'extends' in class declaration 
-        if ( preg_match('|class.+ extends$|', substr($out_contents, $i - ($i>50?50:$i), 50)) ) { 
-            $i += 1; 
-            array_pop($unset); 
-            continue; 
-        } 
-    } 
+                continue 2;
+            }
+        }
+        //Need whitespace around 'as' in foreach construct
+        if ( preg_match('|foreach.+ as$|', substr($out_contents, $i - ($i>50?50:$i), 50)) ) {
+            $i++;
+            array_pop($unset);
+            continue;
+        }
+        //Need whitespace around 'extends' in class declaration
+        if ( preg_match('|class.+ extends$|', substr($out_contents, $i - ($i>50?50:$i), 50)) ) {
+            $i += 1;
+            array_pop($unset);
+            continue;
+        }
+    }
 
-    if ( $is_whitespace ) 
-        $unset[] = $i; 
+    if ( $is_whitespace )
+        $unset[] = $i;
 
-} 
-foreach ( $unset as $i )  
-    unset($oca[$i]); 
-$out_contents = implode('', $oca); 
+}
+foreach ( $unset as $i )
+    unset($oca[$i]);
+$out_contents = implode('', $oca);
 unset($in_field, $oca, $count, $unset);
 
 //Next, Strip Whitespace from the HTML in the file:

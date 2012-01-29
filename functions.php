@@ -7,18 +7,18 @@ function url_join($one, $two){
 	extract($url);
 	if( ! empty($query) )
 		$query = "?$query";
-	
+
 	$port = ($port != 80) ? ':' . $port : '';
-	
+
 	if ( substr($path, -1) != '/') //If path is to a file, direct back to a folder.
 		$path = trailingslashit(rtrim(dirname($path),'\\'));
-	
+
 	if ( strpos($two, '://') > -1 ) // http:// .../...jpg
 		return $two;
-	
+
 	if ( !empty($two) && $two{0} == '/' ) //   /file.jpg
 		return "{$scheme}://{$host}{$port}{$two}";
-	
+
 	if ( substr($two,0, 3) == '../' ){
 		$path = trailingslashit(rtrim(dirname($path),'\\'));
 		$two = substr($two, 3);

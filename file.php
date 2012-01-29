@@ -230,7 +230,7 @@ function get_filesystem_method($args = array(), $context = false) {
 			@fclose($temp_handle);
 			unlink($temp_file_name);
 		}
-		
+
  	}
 
 	if ( ! $method && isset($args['connection_type']) && 'ssh' == $args['connection_type'] && extension_loaded('ssh2') && function_exists('stream_get_contents') ) $method = 'ssh2';

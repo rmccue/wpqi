@@ -3,13 +3,13 @@
 @set_magic_quotes_runtime(0);
 @ini_set('magic_quotes_sybase', 0);
 
-if ( ini_get('register_globals') ) { 
+if ( ini_get('register_globals') ) {
 	if ( isset($_REQUEST['GLOBALS']) )
 		die('GLOBALS overwrite attempt detected');
-	
+
 	// Variables that shouldn't be unset
 	$noUnset = array('GLOBALS', '_GET', '_POST', '_COOKIE', '_REQUEST', '_SERVER', '_ENV', '_FILES', 'table_prefix');
-	
+
 	$input = array_merge($_GET, $_POST, $_COOKIE, $_SERVER, $_ENV, $_FILES, isset($_SESSION) && is_array($_SESSION) ? $_SESSION : array());
 	foreach ( $input as $k => $v ) {
 		if ( !in_array($k, $noUnset) && isset($GLOBALS[$k]) ) {
@@ -77,14 +77,14 @@ if ( strpos( $_SERVER['SCRIPT_NAME'], 'php.cgi' ) !== false )
 $PHP_SELF = $_SERVER['PHP_SELF'];
 if ( empty( $PHP_SELF ) )
 	$_SERVER['PHP_SELF'] = $PHP_SELF = preg_replace( '/(\?.*)?$/', '', $_SERVER["REQUEST_URI"] );
-	
+
 $is_apache = (strpos($_SERVER['SERVER_SOFTWARE'], 'Apache') !== false || strpos($_SERVER['SERVER_SOFTWARE'], 'LiteSpeed') !== false);
 
 $installer_file = defined('COMPRESSED_BUILD') && COMPRESSED_BUILD ? preg_replace('|\(\d+.*$|', '', __FILE__) : dirname(__FILE__) . '/installer.php';
 
 if ( function_exists('posix_getpwuid') && $userinfo = posix_getpwuid(@fileowner($installer_file)) )
 	$the_guessed_user = $userinfo['name'];
-else if ( preg_match('|^/home/([^/]+?)/|i', $installer_file, $mat) ) 
+else if ( preg_match('|^/home/([^/]+?)/|i', $installer_file, $mat) )
 	$the_guessed_user = $mat[1];
 else
 	$the_guessed_user = 'username';

@@ -19,7 +19,7 @@ if ( ! defined('WP_CONTENT_DIR') )
 	define('WP_CONTENT_DIR', rtrim(ABSPATH, '/') );
 if ( ! defined('WP_PLUGIN_DIR') )
 	define('WP_PLUGIN_DIR', rtrim(ABSPATH, '/') );
-	
+
 function untrailingslashit($s) { return rtrim($s, '/'); }
 function trailingslashit($s) { return untrailingslashit($s) . '/'; }
 
