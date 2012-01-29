@@ -46,6 +46,38 @@ function wp_parse_args( $args, $defaults = '' ) {
 	return $r;
 }
 
+function wp_load_translations_early() {}
+
+function wp_debug_backtrace_summary( $ignore_class = null, $skip_frames = 0, $pretty = true ) {
+	$trace  = debug_backtrace( false );
+	$caller = array();
+	$check_class = ! is_null( $ignore_class );
+	$skip_frames++; // skip this function
+
+	foreach ( $trace as $call ) {
+		if ( $skip_frames > 0 ) {
+			$skip_frames--;
+		} elseif ( isset( $call['class'] ) ) {
+			if ( $check_class && $ignore_class == $call['class'] )
+				continue; // Filter out calls
+
+			$caller[] = "{$call['class']}{$call['type']}{$call['function']}";
+		} else {
+			if ( in_array( $call['function'], array( 'do_action', 'apply_filters' ) ) ) {
+				$caller[] = "{$call['function']}('{$call['args'][0]}')";
+			} elseif ( in_array( $call['function'], array( 'include', 'include_once', 'require', 'require_once' ) ) ) {
+				$caller[] = $call['function'] . "('" . str_replace( array( WP_CONTENT_DIR, ABSPATH ) , '', $call['args'][0] ) . "')";
+			} else {
+				$caller[] = $call['function'];
+			}
+		}
+	}
+	if ( $pretty )
+		return join( ', ', array_reverse( $caller ) );
+	else
+		return $caller;
+}
+
 
 /**
  * Generates a random password drawn from the defined set of characters.
