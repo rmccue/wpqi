@@ -19,6 +19,11 @@ But you should avoid that. :)
 Patches are accepted by pull requests. Raw patch/diff files will most likely
 not be considered.
 
+## Setup
+
+1. Clone a copy of [WordPress](https://github.com/WordPress/WordPress) into `wp-files`
+2. Run `php build.php`
+
 ## License
 WordPress Quick Install includes parts of WordPress, licensed under the GPL.
 See LICENSE for details.
