@@ -47,7 +47,7 @@ function _get_resources() {
 	$reses = '$resources = array();';
 	foreach ( $all as $res ) {
 		$res = str_replace('resources/', '', $res);
-		$reses .= '$resources["' . $res . '"] = "' . base64_encode(gzcompress( file_get_contents('resources/' . $res), 9 )) . '";';
+		$reses .= '$resources["' . $res . '"] = "' . base64_encode(gzcompress( file_get_contents('resources/' . $res), 9 )) . '";' . "\n";
 	}
 	return $reses;
 }
@@ -128,6 +128,7 @@ for ( $i = 0; $i < $count; $i++) {
     } 
 
     $is_whitespace = $in_php && preg_match('|^\s+$|', $value); 
+    continue;
 
     if ( $is_whitespace ) { 
         //Make sure theres some whitespace after PHP lang items. 
@@ -194,8 +195,10 @@ for ( $i = 0; $i < $count; $i++) {
 //Final touches.. This is done to allow for functions to be defined in a later eval() block to allow for WP inclusion directly by compressed content.
 $chunks = explode('/*BuildCompressSplit*/', $out_contents);
 $out_contents = '<?php ' . _get_requirements_notice() . _get_resources();
-foreach ( $chunks as $chunk )
-	$out_contents .= "\n" . 'eval(gzuncompress(base64_decode("' . base64_encode(gzcompress($chunk, 9)) . '")));';
+foreach ( $chunks as $chunk ) {
+	//$out_contents .= "\n" . 'eval(gzuncompress(base64_decode("' . base64_encode(gzcompress($chunk, 9)) . '")));';
+    $out_contents .= $chunk;
+}
 
 file_put_contents('release/installer.php', $out_contents);
 echo "Done";
