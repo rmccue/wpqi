@@ -87,7 +87,7 @@ if ( defined('COMPRESSED_BUILD') && COMPRESSED_BUILD && !file_exists('./build.ph
 
 ?>
 <p><strong>Success!</strong> WordPress has been downloaded.</p>
-<p class="step"><a href="<?php echo $path ?>wp-admin/setup-config.php">Begin installation</a></p>
+<p class="step"><a href="<?php echo $path ?>wp-admin/setup-config.php" class="button">Begin installation</a></p>
 
 <?php
 the_footer();
