@@ -85,20 +85,9 @@ if ( defined('COMPRESSED_BUILD') && COMPRESSED_BUILD && !file_exists('./build.ph
 		echo '<strong>Failed</strong> - You should remove <code>' . basename($installer_file) . '</code> manually.</p>';
 }
 
-//Ok, We've got all the details now..
+?>
+<p><strong>Success!</strong> WordPress has been downloaded.</p>
+<p class="step"><a href="<?php echo $path ?>wp-admin/setup-config.php">Begin installation</a></p>
 
-/*
-if ( $details ) {
-	echo '<form method="post" action="' . $details['url']  . 'wp-login.php">
-<input type="hidden" name="log" value="' . $details['username'] . '" />
-<input type="hidden" name="pwd" value="' . $details['password'] . '" />
-<p><strong>Success!</strong> Your WordPress installation is now complete, You may now login with the default username <strong>' . $details['username'] . '</strong>, with the password <strong>' . $details['password'] . '</strong>. Note this password as it will be required to login with in the future if you do not change the password after logging in. For your convience it has also been emailed to your selected email address.</p>
-
-<p class="step"><input name="submit" type="submit" value="Login Instantly" class="button" /></p>
-</form>';
-} else {
-	echo '<p>An error occured during install, Its unknown if the installation was completed successfully. Please browse to the installation folder and complete the install if nesecary.(TODO Spellings)</p>';
-}
-*/
-
-//Its been a long night :)
+<?php
+the_footer();
