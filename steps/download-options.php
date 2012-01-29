@@ -1,8 +1,4 @@
 <?php
-foreach ( array('title' => '', 'email' => '', 'tagline' => '', 'release' => '', 'lang' => $the_guessed_language) as $field => $default )
-	$$field = isset($_REQUEST[$field]) ? $_REQUEST[$field] : $default;
-
-$selected_options = array('create-default-objects', 'allow-search-engines','pretty-permalinks');
 
 $errors = array();
 
@@ -39,22 +35,7 @@ the_header('download-options');
 
 <input type="hidden" name="package" value="<?php echo $api['download'] ?>" />
 <p id="release-options" class="<?php if ( ! isset($_GET['select-release']) ) echo 'hidden' ?>"><label for="lang" class="hidden">Release:</label>
-<select name="release" id="release-select" onchange="update_release(this)">
 
-	<?php
-	/*
-		foreach ( (array)$api as $the_lang => $versions ) :
-			foreach ( $versions as $the_version ) :
-		?>
-		<option value="<?php echo $the_version->download_url ?>" <?php if ( $the_lang == $lang && $the_version->version == $version ) echo 'selected="selected"'; ?>><?php echo $the_version->language . ' - ' . $the_version->version; ?></option>
-
-		<?php
-			endforeach;
-		endforeach;
-		unset($the_lang, $versions, $version);
-	*/
-	?>
-</select>
 </p>
 
 <p<?php if ( in_array('title', $errors) ) echo ' class="error"' ?>><label for="title">Title:</label>
@@ -74,25 +55,7 @@ if ( ! defined('COMPRESSED_BUILD') || !COMPRESSED_BUILD )
 ?>
 <input type="text" class="large" name="url" id="url" value="<?php echo $url ?>" disabled="disabled" />
 </p>
-<div id="advanced-options">
-<fieldset>
-	<legend>Install Options</legend>
-<?php
-	$options = array(
-				'create-default-objects' => 'Create Example Posts, Pages, Links and Comments',
-				'allow-search-engines' => 'Allow this Installation to appear in Search Engines.',
-				'pretty-permalinks' => 'Enable <em>Pretty Permalinks</em> by default.',
-				'debug-install' => 'Enable Development mode on the WordPress Install.',
-				'enable-multisite' => 'Enable Multisite Installation support'
-				);
-	foreach ( $options as $option => $text ) :
-?>
-	<input type="checkbox" name="options[<?php echo $option ?>]" id="<?php echo $option ?>" <?php if ( in_array($option, $selected_options) ) echo ' checked="checked"'; ?> /> <label for="<?php echo $option ?>"><?php echo $text ?></label><br />
-<?php endforeach; ?>
-</fieldset>
-</div>
 <p class="step"><input name="submit" type="submit" value="Continue" class="button" /></p>
-<p><input type="checkbox" name="advanced-options" id="advanced-options-toggle" <?php if ( isset($_REQUEST['advanced-options']) ) echo ' checked="checked"' ?>  /><label for="advanced-options-toggle">Show Advanced Options</label></p>
 </form>
 <?php
 the_footer();

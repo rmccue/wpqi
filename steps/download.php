@@ -1,8 +1,23 @@
 <?php
-echo 'download';
 
-// Replace me!
-$credentials = array( 'hostname' => 'localhost', 'port' => '21', 'username' => $the_guessed_user, 'password' => '', 'public_key' => '', 'private_key' => '', 'connection_type' => 'ftp');
+$query = array(
+	'locale' => 'en_US',
+	'php' => phpversion()
+);
+
+$api = wp_remote_get('http://api.wordpress.org/core/version-check/1.6/?' . http_build_query($query, null, '&'), array('timeout' => 10));
+if ( ! is_wp_error($api) && $api && !empty($api['body']) && 200 == $api['response']['code'] ) {
+	$api = @unserialize($api['body']);
+	$api = $api['offers'][0];
+}
+
+if ( !$api || is_wp_error($api) || (isset($api['response']['code']) && $api['response']['code'] !== 200) ) {
+	$api = array(
+		'locale' => 'en_US',
+		'download' => 'http://wordpress.org/latest.zip',
+		'current' => 'unknown'
+	);
+}
 
 the_header('download');
 echo '<h2>Installing...</h2>';
@@ -17,9 +32,9 @@ echo '<p>Connecting to Filesystem.. ';
 $fs = WP_Filesystem($credentials, ABSPATH);
 echo '<strong>Success!</strong></p>';
 
-echo '<p>Downloading package from <code>' . $_REQUEST['package'] . '</code>.. ';
+echo '<p>Downloading package from <code>' . $api['download'] . '</code>.. ';
 @ob_end_flush(); flush();
-$download_file = download_url($_REQUEST['package']);
+$download_file = download_url($api['download']);
 if ( is_wp_error($download_file) )
 	die( '<strong>Failure</strong> - ' . $download_file->get_error_code() . ': ' . $download_file->get_error_message() );
 else

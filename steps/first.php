@@ -1,4 +1,6 @@
-<?php the_header() ?><h2>Welcome to WordPress QI, The Single-file WordPress Quick Installer</h2>
+<?php the_header() ?>
+
+<h2>Welcome to WordPress QI, The Single-file WordPress Quick Installer</h2>
 <p>Since you're viewing this text, It means you've suceeded in copying the only file needed for WordPress QI to your webhost.</p>
 <p>The following screens will ask for a few details in order to install and set up wordpress correctly. The items you'll need to know are:
 <ol>
@@ -10,7 +12,12 @@
 </ol>
 </p>
 
-<p class="step"><a href="?step=<?php echo ( 'direct' == get_filesystem_method() ) ? 'ftp-detail-check' : 'ftp-details' ?>" class="button">Let&#8217;s go!</a></p>
+<form action="" method="POST">
+	<input type="hidden" name="step" value="download" />
+	<input type="hidden" />
+	<p class="step"><input type="submit" class="button" value="Let&#8217;s go!" /></p>
+</form>
+
 <?php
 the_footer();
 
