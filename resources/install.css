@@ -103,6 +103,14 @@ p.error input {
 	border: 1px solid #c00;
 }
 
+.failed {
+	display: block;
+	background-color: #ffebe8;
+	padding: 6px;
+	border: 1px solid #c00;
+	margin: 6px 0 14px;
+}
+
 label {
 	font-weight: bold;
 }

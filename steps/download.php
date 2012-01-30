@@ -7,7 +7,7 @@ function _cleanup($download_file) {
 if ( unlink( $download_file ) )
 	echo '<strong>Success!</strong>';
 else
-	echo '<strong>Failure</strong> &mdash; Please remove <code>' . htmlspecialchars( $download_file ) . '</code> manually.';
+	echo '<span class="failed"><strong>Failure</strong> &mdash; Please remove <code>' . htmlspecialchars( $download_file ) . '</code> manually.</span>';
 ?></p>
 <?php
 }
@@ -36,7 +36,7 @@ the_header( 'download' );
 
 if ( validate_file( $path ) !== 0 ) {
 ?>
-	<p><strong>Failed</strong> - Your path <code><?php echo htmlspecialchars( $path ) ?></code> looks invalid. Make sure that it's a valid path relative to this directory (<code><?php echo htmlspecialchars( ABSPATH ) ?></code>)</p>
+	<p class="failed"><strong>Failed</strong> - Your path <code><?php echo htmlspecialchars( $path ) ?></code> looks invalid. Make sure that it's a valid path relative to this directory (<code><?php echo htmlspecialchars( ABSPATH ) ?></code>)</p>
 <?php
 	the_footer();
 	die();
@@ -67,7 +67,7 @@ flush();
 
 $download_file = wpqi_download_url( $api['download'] );
 if ( is_wp_error( $download_file ) ) {
-	echo '<strong>Failure</strong> - ' . $download_file->get_error_code() . ': ' . $download_file->get_error_message() . '</p>';
+	echo '<span class="failed"><strong>Failure</strong> - ' . $download_file->get_error_code() . ': ' . $download_file->get_error_message() . '</span></p>';
 
 	the_footer();
 	die();
@@ -94,7 +94,7 @@ else {
 	if ( $md5_response && ! is_wp_error( $md5_response ) && 200 === wp_remote_retrieve_response_code( $md5_response ) ) {
 		echo '<strong>Success!</strong></p>';
 	} else {
-		echo '<strong>Failure</strong> - Unable to download MD5 checksum to verify the download</p>';
+		echo '<span class="failed"><strong>Failure</strong> - Unable to download MD5 checksum to verify the download</span></p>';
 
 		the_footer();
 		die();
@@ -112,10 +112,10 @@ flush();
 $our_md5 = md5_file( $download_file );
 if ( $md5 !== $our_md5 ) {
 ?>
-	<strong>Failure</strong> - MD5 checksums did not match.<br />
+	<span class="failed"><strong>Failure</strong> - MD5 checksums did not match.<br />
 	<small>(We have <abbr title="<?php echo $our_md5 ?>"><code><?php echo substr($our_md5, 0, 8) ?></code></abbr>,
 		but server reports <abbr title="<?php echo htmlspecialchars($md5) ?>"><code><?php echo htmlspecialchars(substr($md5, 0, 8)) ?></code>)
-	</small>
+	</small></span>
 	</p>
 <?php
 	_cleanup($download_file);
@@ -149,8 +149,8 @@ if ( is_wp_error( $res ) ) {
 	$data = $res->get_error_data();
 	if ( !empty( $data ) )
 		$error .= $res->get_error_data();
-	echo "<script type='text/javascript'>document.getElementById('progress').innerHTML = 'Failed - Uh oh, we had an error: " . $error . "';</script>";
-	echo "<noscript><strong>Failed</strong> - Uh oh, we had an error: {$error}</noscript>";
+	echo "<script type='text/javascript'>document.getElementById('progress').innerHTML = '<span class=\"failed\">Failed - Uh oh, we had an error: " . $error . "</span>';</script>";
+	echo "<noscript><span class='failed'><strong>Failed</strong> - Uh oh, we had an error: {$error}</span></noscript>";
 
 	_cleanup($download_file);
 
@@ -169,7 +169,7 @@ if ( defined( 'COMPRESSED_BUILD' ) && COMPRESSED_BUILD && !file_exists( './build
 	if ( $wp_filesystem->delete( $installer_file ) )
 		echo '<strong>Success!</strong>.</p>';
 	else
-		echo '<strong>Failed</strong> &mdash; Please remove <code>' . htmlspecialchars( basename( $installer_file ) ) . '</code> manually.</p>';
+		echo '<span class="failed"><strong>Failed</strong> &mdash; Please remove <code>' . htmlspecialchars( basename( $installer_file ) ) . '</code> manually.</span></p>';
 }
 
 ?>
