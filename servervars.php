@@ -8,7 +8,7 @@ if ( ini_get('register_globals') ) {
 		die('GLOBALS overwrite attempt detected');
 
 	// Variables that shouldn't be unset
-	$noUnset = array('GLOBALS', '_GET', '_POST', '_COOKIE', '_REQUEST', '_SERVER', '_ENV', '_FILES', 'table_prefix');
+	$noUnset = array('GLOBALS', '_GET', '_POST', '_COOKIE', '_REQUEST', '_SERVER', '_ENV', '_FILES', 'table_prefix', 'step');
 
 	$input = array_merge($_GET, $_POST, $_COOKIE, $_SERVER, $_ENV, $_FILES, isset($_SESSION) && is_array($_SESSION) ? $_SESSION : array());
 	foreach ( $input as $k => $v ) {
