@@ -3,7 +3,7 @@
 <p>If you're reading this message, congratulations! WordPress QI is ready to start setting up your new WordPress site.</p>
 <p>Before we hand off to WordPress to begin installation, we're going to download the latest version of WordPress. In order to do so, we'll need access to your server directory.</p>
 <?php if ( 'direct' != get_filesystem_method() ) :?>
-<p>We can't access the files directly, so on the next step, you'll be prompted for your FTP details (or if available, your SSH details).</p>
+<p>We can't access the files directly, so on the next step, you'll be prompted for your FTP details.</p>
 <?php else: ?>
 <p>We can access the files directly, so we're almost ready to go. Just hit the button below to begin!</p>
 <?php endif; ?>

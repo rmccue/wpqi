@@ -38,7 +38,6 @@ include 'wp-files/wp-includes/class-http.php';
 include 'wp-files/wp-includes/http.php';
 include 'wp-files/wp-admin/includes/class-wp-filesystem-base.php';
 include 'wp-files/wp-admin/includes/class-wp-filesystem-direct.php';
-include 'wp-files/wp-admin/includes/class-wp-filesystem-ssh2.php';
 include 'wp-files/wp-admin/includes/class-wp-filesystem-ftpext.php';
 include 'wp-files/wp-admin/includes/class-ftp.php';
 if ( defined('COMPRESSED_BUILD') && COMPRESSED_BUILD ) { //class-ftp includes it in normal operation..
@@ -66,12 +65,6 @@ $credentials['connection_type'] = !empty($_POST['connection_type']) ? $_POST['co
 $credentials['hostname'] = !empty($_POST['hostname']) ? $_POST['hostname'] : $credentials['hostname'];
 $credentials['username'] = !empty($_POST['username']) ? $_POST['username'] : $credentials['username'];
 $credentials['password'] = !empty($_POST['password']) ? $_POST['password'] : $credentials['password'];
-
-if ( 'ssh' == $credentials['connection_type'] ) {
-	// Check to see if we are setting the public/private keys for ssh
-	$credentials['public_key'] = !empty($_POST['public_key']) ? $_POST['public_key'] : $credentials['public_key'];
-	$credentials['private_key'] = !empty($_POST['private_key']) ? $_POST['private_key'] : $credentials['private_key'];
-}
 
 //sanitize the hostname, Some people might pass in odd-data:
 $credentials['hostname'] = preg_replace('|\w+://|', '', $credentials['hostname']); //Strip any schemes off

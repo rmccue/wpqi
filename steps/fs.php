@@ -27,8 +27,6 @@ extract($credentials);
 		$types[ 'ftp' ] = 'FTP';
 	if ( extension_loaded('ftp') ) //Only this supports FTPS :)
 		$types[ 'ftps' ] = 'FTPS (SSL)';
-	if ( extension_loaded('ssh2') && function_exists('stream_get_contents') )
-		$types[ 'ssh' ] = 'SSH2';
 
 	foreach ( $types as $name => $text ) :
 	?>
@@ -55,16 +53,6 @@ extract($credentials);
 		<input name="hostname" id="hostname" type="text" size="25" value="<?php echo $hostname ?>" />
 		99% chance you won't need to change this value.
 	</p>
-<?php if ( in_array('ssh', $types) ) : ?>
-	<p<?php if ($errors) echo 'class="error"'; ?>>
-		<label for="public_key">SSH Public Key (Optional)</label>
-		<input type="text" name="public_key" id="public_key" value="<?php echo esc_attr($public_key) ?>" />
-		
-		<label for="private_key">SSH Private Key (Optional)</label>
-		<input name="private_key" type="text" id="private_key" value="<?php echo esc_attr($private_key) ?>" />
-		Enter the location on the server where the keys are located. If a passphrase is needed, enter that in the password field above.
-	</p>
-<?php endif; /*ssh*/ ?>
 	<p class="step"><input name="submit" type="submit" value="Continue" class="button" /></p>
 </form>
 
