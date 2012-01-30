@@ -42,6 +42,14 @@ if ( validate_file( $path ) !== 0 ) {
 	die();
 }
 
+if ( file_exists( ABSPATH . '/' . $path ) && glob( ABSPATH . '/' . $path . '/*' ) !== array() ) {
+?>
+	<p class="failed"><strong>Failed</strong> - Your path <code><?php echo htmlspecialchars( $path ) ?></code> already exists and is not empty.</p>
+<?php
+	the_footer();
+	die();
+}
+
 ?>
 
 <p>Beginning download</p>
