@@ -50,7 +50,7 @@ function wp_tempnam($filename = '', $dir = ''){
  * @param string $url the URL of the file to download
  * @return mixed WP_Error on failure, string Filename on success.
  */
-function download_url( $url ) {
+function wpqi_download_url( $url ) {
 	//WARNING: The file is not automatically deleted, The script must unlink() the file.
 	if ( ! $url )
 		return new WP_Error('http_no_url', __('Invalid URL Provided'));
@@ -71,7 +71,7 @@ function download_url( $url ) {
 		return new WP_Error('http_404', trim($response['response']['message']));
 	}
 
-	return $tmpfname;
+	return array($tmpfname, $response);
 }
 
 /**

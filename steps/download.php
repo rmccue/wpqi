@@ -53,30 +53,42 @@ $fs = WP_Filesystem($credentials, ABSPATH);
 @ob_end_flush();
 flush();
 
-$download_file = download_url($api['download']);
-if ( is_wp_error($download_file) ) {
+$download_file = wpqi_download_url( $api['download'] );
+if ( is_wp_error( $download_file ) ) {
 	echo '<strong>Failure</strong> - ' . $download_file->get_error_code() . ': ' . $download_file->get_error_message() . '</p>';
 
 	the_footer();
 	die();
 }
+
+list( $download_file, $response ) = $download_file;
+
 ?><strong>Success!</strong></p>
 
-<?php if ( $api['download'] != 'http://wordpress.org/latest.zip' ) : ?>
-<p>Downloading MD5 checksum to verify download from <code><?php echo htmlspecialchars($api['download']) ?>.md5</code>&hellip;
 <?php
-@ob_end_flush();
-flush();
+if ( ! empty( $response['headers']['content-md5'] ) ) {
+	// WordPress.org should give us the MD5 in the headers, thanks to nacin!
+	$md5 = trim( $response['headers']['content-md5'] );
+}
+else {
+?>
+	<p>Downloading MD5 checksum to verify download from <code><?php echo htmlspecialchars($api['download']) ?>.md5</code>&hellip;
+<?php
+	@ob_end_flush();
+	flush();
 
-$md5_response = wp_remote_get( $api['download'] . '.md5', array( 'timeout' => 10 ) );
+	$md5_response = wp_remote_get( $api['download'] . '.md5', array( 'timeout' => 10 ) );
 
-if ( $md5_response && ! is_wp_error( $md5_response ) && 200 === wp_remote_retrieve_response_code( $md5_response ) ) {
-	echo '<strong>Success!</strong></p>';
-} else {
-	echo '<strong>Failure</strong> - Unable to download MD5 checksum to verify the download</p>';
+	if ( $md5_response && ! is_wp_error( $md5_response ) && 200 === wp_remote_retrieve_response_code( $md5_response ) ) {
+		echo '<strong>Success!</strong></p>';
+	} else {
+		echo '<strong>Failure</strong> - Unable to download MD5 checksum to verify the download</p>';
 
-	the_footer();
-	die();
+		the_footer();
+		die();
+	}
+
+	$md5 = trim( wp_remote_retrieve_body( $md5_response ) );
 }
 ?>
 
@@ -85,14 +97,13 @@ if ( $md5_response && ! is_wp_error( $md5_response ) && 200 === wp_remote_retrie
 @ob_end_flush();
 flush();
 
-if ( trim( wp_remote_retrieve_body( $md5_response ) ) !== md5_file( $download_file ) ) {
+if ( $md5 !== md5_file( $download_file ) ) {
 	echo '<strong>Failure</strong> - MD5 checksum failed to verify the download</p>';
 
 	the_footer();
 	die();
 }
 ?><strong>Success!</strong></p>
-<?php endif; ?>
 
 <p>Uncompressing WordPress files to <code><?php echo htmlspecialchars($path) ?></code>&hellip; <strong><span id="progress">0%</span></strong></p>
 
