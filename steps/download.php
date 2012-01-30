@@ -94,7 +94,7 @@ if ( trim( wp_remote_retrieve_body( $md5_response ) ) !== md5_file( $download_fi
 ?><strong>Success!</strong></p>
 <?php endif; ?>
 
-<p>Uncompressing WordPress files to <?php echo htmlspecialchars($path) ?>&hellip; <strong><span id="progress">0%</span></strong></p>
+<p>Uncompressing WordPress files to <code><?php echo htmlspecialchars($path) ?></code>&hellip; <strong><span id="progress">0%</span></strong></p>
 
 <?php
 @ob_end_flush();
