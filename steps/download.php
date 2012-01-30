@@ -149,7 +149,7 @@ if ( is_wp_error( $res ) ) {
 	$data = $res->get_error_data();
 	if ( !empty( $data ) )
 		$error .= $res->get_error_data();
-	echo "<script type='text/javascript'>document.getElementById('progress').innerHTML = '<strong>Failed</strong> - Uh oh, we had an error: " . $error . "';</script>";
+	echo "<script type='text/javascript'>document.getElementById('progress').innerHTML = 'Failed - Uh oh, we had an error: " . $error . "';</script>";
 	echo "<noscript><strong>Failed</strong> - Uh oh, we had an error: {$error}</noscript>";
 
 	_cleanup($download_file);
@@ -157,7 +157,7 @@ if ( is_wp_error( $res ) ) {
 	the_footer();
 	exit;
 } else {
-	echo "<script type='text/javascript'>document.getElementById('progress').innerHTML = '<strong>Success!</strong>';</script>";
+	echo "<script type='text/javascript'>document.getElementById('progress').innerHTML = 'Success!';</script>";
 }
 
 _cleanup($download_file);
