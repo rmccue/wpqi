@@ -21,6 +21,15 @@ if ( $api && ! is_wp_error( $api ) && ! empty( $api['body'] ) && 200 === wp_remo
 $path = isset( $_REQUEST['path'] ) ? $_REQUEST['path'] : 'wordpress';
 
 the_header( 'download' );
+
+if (validate_file($path) !== 0) {
+?>
+	<p><strong>Failed</strong> - Your path <code><?php echo htmlspecialchars($path) ?></code> looks invalid. Make sure that it's a valid path relative to this directory (<code><?php echo htmlspecialchars(ABSPATH) ?></code>)</p>
+<?php
+	the_footer();
+	die();
+}
+
 ?>
 
 <p>Beginning download</p>
