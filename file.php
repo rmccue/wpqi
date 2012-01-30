@@ -224,11 +224,9 @@ function get_filesystem_method( $args = array(), $context = false ) {
 
  	}
 
-	if ( ! $method && isset( $args['connection_type'] ) && 'ssh' == $args['connection_type'] && extension_loaded( 'ssh2' ) && function_exists( 'stream_get_contents' ) )
-		$method = 'ssh2';
 	if ( ! $method && extension_loaded( 'ftp' ) )
 		$method = 'ftpext';
-	if ( ! $method && ( extension_loaded( 'sockets' ) || function_exists( 'fsockopen' ) ) )
+	elseif ( ! $method && ( extension_loaded( 'sockets' ) || function_exists( 'fsockopen' ) ) )
 		$method = 'ftpsockets'; //Sockets: Socket extension; PHP Mode: FSockopen / fwrite / fread
 
 	return apply_filters( 'filesystem_method', $method, $args );
