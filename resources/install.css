@@ -58,6 +58,7 @@ p, li {
 }
 
 code { font-size: 13px; }
+small code { font-size: 10px; }
 
 ul, ol { padding: 5px 5px 5px 22px; }
 

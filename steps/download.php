@@ -92,13 +92,20 @@ else {
 }
 ?>
 
-<p>Verifing the download using the MD5 checksum&hellip;
+<p>Verifying the download&hellip;
 <?php
 @ob_end_flush();
 flush();
 
-if ( $md5 !== md5_file( $download_file ) ) {
-	echo '<strong>Failure</strong> - MD5 checksum failed to verify the download</p>';
+$our_md5 = md5_file( $download_file );
+if ( $md5 !== $our_md5 ) {
+?>
+	<strong>Failure</strong> - MD5 checksums did not match.<br />
+	<small>(We have <abbr title="<?php echo $our_md5 ?>"><code><?php echo substr($our_md5, 0, 8) ?></code></abbr>,
+		but server reports <abbr title="<?php echo htmlspecialchars($md5) ?>"><code><?php echo htmlspecialchars(substr($md5, 0, 8)) ?></code>)
+	</small>
+	</p>
+<?php
 
 	the_footer();
 	die();
