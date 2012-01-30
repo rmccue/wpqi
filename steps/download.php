@@ -5,13 +5,12 @@ $query = array(
 	'php' => phpversion()
 );
 
-$api = wp_remote_get('http://api.wordpress.org/core/version-check/1.6/?' . http_build_query($query, null, '&'), array('timeout' => 10));
-if ( ! is_wp_error($api) && $api && !empty($api['body']) && 200 == $api['response']['code'] ) {
-	$api = @unserialize($api['body']);
-	$api = $api['offers'][0];
-}
+$api = wp_remote_get( 'http://api.wordpress.org/core/version-check/1.6/?' . http_build_query( $query, null, '&' ), array( 'timeout' => 10 ) );
 
-if ( !$api || is_wp_error($api) || (isset($api['response']['code']) && $api['response']['code'] !== 200) ) {
+if ( $api && ! is_wp_error( $api ) && ! empty( $api['body'] ) && 200 === wp_remote_retrieve_response_code( $api ) ) {
+	$api = @unserialize( wp_remote_retrieve_body( $api ) );
+	$api = $api['offers'][0];
+} else {
 	$api = array(
 		'locale' => 'en_US',
 		'download' => 'http://wordpress.org/latest.zip',
@@ -19,9 +18,9 @@ if ( !$api || is_wp_error($api) || (isset($api['response']['code']) && $api['res
 	);
 }
 
-$path = isset($_REQUEST['path']) ? $_REQUEST['path'] : 'wordpress';
+$path = isset( $_REQUEST['path'] ) ? $_REQUEST['path'] : 'wordpress';
 
-the_header('download');
+the_header( 'download' );
 ?>
 
 <p>Beginning download</p>
@@ -47,12 +46,44 @@ flush();
 
 $download_file = download_url($api['download']);
 if ( is_wp_error($download_file) ) {
-	echo '<strong>Failure</strong> - ' . $download_file->get_error_code() . ': ' . $download_file->get_error_message();
+	echo '<strong>Failure</strong> - ' . $download_file->get_error_code() . ': ' . $download_file->get_error_message() . '</p>';
 
 	the_footer();
 	die();
 }
 ?><strong>Success!</strong></p>
+
+<?php if ( $api['download'] != 'http://wordpress.org/latest.zip' ) : ?>
+<p>Downloading MD5 checksum to verify download from <code><?php echo $api['download'] ?>.md5</code>&hellip;
+<?php
+@ob_end_flush();
+flush();
+
+$md5_response = wp_remote_get( $api['download'] . '.md5', array( 'timeout' => 10 ) );
+
+if ( $md5_response && ! is_wp_error( $md5_response ) && 200 === wp_remote_retrieve_response_code( $md5_response ) ) {
+	echo '<strong>Success!</strong></p>';
+} else {
+	echo '<strong>Failure</strong> - Unable to download MD5 checksum to verify the download</p>';
+
+	the_footer();
+	die();
+}
+?>
+
+<p>Verifing the download using the MD5 checksum&hellip;
+<?php
+@ob_end_flush();
+flush();
+
+if ( trim( wp_remote_retrieve_body( $md5_response ) ) !== md5_file( $download_file ) ) {
+	echo '<strong>Failure</strong> - MD5 checksum failed to verify the download</p>';
+
+	the_footer();
+	die();
+}
+?><strong>Success!</strong></p>
+<?php endif; ?>
 
 <p>Uncompressing WordPress files to <?php echo $path ?>&hellip; <strong><span id="progress">0%</span></strong></p>
 
