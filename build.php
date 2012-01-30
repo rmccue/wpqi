@@ -16,36 +16,36 @@ function _strip_php_openers($file) {
 }
 
 function _replace_include($matches) {
-    $filename = isset($matches[5]) ? $matches[5] : $matches[4];
+	$filename = isset($matches[5]) ? $matches[5] : $matches[4];
 
-    $known_missing_includes = array('class-ftp-".($mod_sockets?"sockets":"pure").".php');
+	$known_missing_includes = array('class-ftp-".($mod_sockets?"sockets":"pure").".php');
 
-    if ( !file_exists($filename) ) {
-        if ( ! isset($_REQUEST['quiet']) )
-            if ( !in_array($filename, $known_missing_includes) )
-                echo '<p><strong>Warning:</strong> <code>' . $filename . '</code> does not exist</p>';
-        return '';
-    }
-    $file = _strip_php_openers(file_get_contents($filename));
-    //Next, Replace WP_DEBUG with QI_DEBUG in WORDPRESS FILES ONLY
-    if ( strpos($filename, 'wp-files') !== false )
-        $file = str_replace('WP_DEBUG', 'QI_DEBUG', $file);
-    $file = preg_replace_callback('#(?<!/\*BuildIgnoreInclude\*/)(include|require|include_once|require_once)((\(.*?["\'](.+)["\']\s*\))|\s*["\'](.+)["\']);#i', '_replace_include', $file);
-    return "\n" . $file . "\n";
+	if ( !file_exists($filename) ) {
+		if ( ! isset($_REQUEST['quiet']) )
+			if ( !in_array($filename, $known_missing_includes) )
+				echo '<p><strong>Warning:</strong> <code>' . $filename . '</code> does not exist</p>';
+		return '';
+	}
+	$file = _strip_php_openers(file_get_contents($filename));
+	//Next, Replace WP_DEBUG with QI_DEBUG in WORDPRESS FILES ONLY
+	if ( strpos($filename, 'wp-files') !== false )
+		$file = str_replace('WP_DEBUG', 'QI_DEBUG', $file);
+	$file = preg_replace_callback('#(?<!/\*BuildIgnoreInclude\*/)(include|require|include_once|require_once)((\(.*?["\'](.+)["\']\s*\))|\s*["\'](.+)["\']);#i', '_replace_include', $file);
+	return "\n" . $file . "\n";
 }
 
 function _get_resources() {
-    $all = glob('resources/*');
-    $reses = '$resources = array();' . "\n";
-    foreach ( $all as $res ) {
-        $res = str_replace('resources/', '', $res);
-        $reses .= '$resources["' . $res . '"] = "' . base64_encode(gzcompress( file_get_contents('resources/' . $res), 9 )) . '";' . "\n";
-    }
-    return $reses;
+	$all = glob('resources/*');
+	$reses = '$resources = array();' . "\n";
+	foreach ( $all as $res ) {
+		$res = str_replace('resources/', '', $res);
+		$reses .= '$resources["' . $res . '"] = "' . base64_encode(gzcompress( file_get_contents('resources/' . $res), 9 )) . '";' . "\n";
+	}
+	return $reses;
 }
 
 function _get_requirements_notice() {
-    return "\nif(!function_exists('gzuncompress')||!function_exists('base64_decode'))die('This script requires for the functions <code>gzuncompress()</code>, <code>base64_decode</code> and <code>eval()</code> to be available. Your current hosting does not allow one or more of these functions. Please try a Minified Build instead.');\n"; //TODO: Eval doesnt seem to play nice here.
+	return "\nif(!function_exists('gzuncompress')||!function_exists('base64_decode'))die('This script requires for the functions <code>gzuncompress()</code>, <code>base64_decode</code> and <code>eval()</code> to be available. Your current hosting does not allow one or more of these functions. Please try a Minified Build instead.');\n"; //TODO: Eval doesnt seem to play nice here.
 }
 
 
@@ -68,8 +68,8 @@ $out_contents = preg_replace_callback('#(?<!/\*BuildIgnoreInclude\*/)(include|re
 $date = date('Y-m-d');
 $revision = '';
 if ( file_exists(dirname(__FILE__) . '/.git/HEAD') ) {
-    $revision = trim(exec('git rev-parse --short HEAD'));
-    $out_contents = preg_replace('#\$wpqi_version = \'([^\']+)\';#', '$wpqi_version = \'$1-' . $revision . '\';', $out_contents);
+	$revision = trim(exec('git rev-parse --short HEAD'));
+	$out_contents = preg_replace('#\$wpqi_version = \'([^\']+)\';#', '$wpqi_version = \'$1-' . $revision . '\';', $out_contents);
 }
 $out_contents = str_replace('/*BuildDate*/', $date, $out_contents);
 
@@ -85,31 +85,31 @@ echo 'Compressing whitespace and stripping comments' . PHP_EOL;
 $tokens = token_get_all('<?php ' . $out_contents);
 $result = '';
 foreach ($tokens as $token) {
-    if (is_string($token)) {
-        $result .= $token;
-        continue;
-    }
+	if (is_string($token)) {
+		$result .= $token;
+		continue;
+	}
 
-    switch ($token[0]) {
-        // Strip comments and PHPDoc comments
-        case T_DOC_COMMENT:
-        case T_COMMENT:
-            if (strpos($token[1], 'BuildCompressSplit') !== false) {
-                $result .= $token[1];
-            }
-            break;
+	switch ($token[0]) {
+		// Strip comments and PHPDoc comments
+		case T_DOC_COMMENT:
+		case T_COMMENT:
+			if (strpos($token[1], 'BuildCompressSplit') !== false) {
+				$result .= $token[1];
+			}
+			break;
 
-        case T_WHITESPACE:
-            $result .= ' ';
-            break;
+		case T_WHITESPACE:
+			$result .= ' ';
+			break;
 
-        case T_INLINE_HTML:
-            $token[1] = preg_replace('|>\s+<|m', '><', $token[1]);
-            // fall-through
-        default:
-            $result .= $token[1];
-            break;
-    }
+		case T_INLINE_HTML:
+			$token[1] = preg_replace('|>\s+<|m', '><', $token[1]);
+			// fall-through
+		default:
+			$result .= $token[1];
+			break;
+	}
 }
 $out_contents = substr($result, 6);
 
