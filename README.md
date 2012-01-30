@@ -5,8 +5,19 @@ minutes!
 Originally created by [Dion Hulse](http://dd32.id.au/). [View all
 contributors](https://github.com/rmccue/wpqi/contributors).
 
-## Developing
-If you're using Git, simply fork and develop away:
+## Downloading
+
+	git clone https://github.com/rmccue/wpqi.git
+
+Or, for the SVN users amongst you:
+
+	svn checkout https://github.com/rmccue/wpqi
+
+You can also grab a [copy of the latest code as a
+zip](https://github.com/rmccue/wpqi/zipball/master).
+
+## Forking
+If you're using Git, simply fork via GitHub and develop away:
 
 	git clone https://github.com/[you!]/wpqi.git
 
