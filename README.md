@@ -2,7 +2,8 @@
 A single-file installer for WordPress, designed to get you up-and-running in
 minutes!
 
-Originally created by [Dion Hulse](http://dd32.id.au/).
+Originally created by [Dion Hulse](http://dd32.id.au/). [View all
+contributors](https://github.com/rmccue/wpqi/contributors).
 
 ## Developing
 If you're using Git, simply fork and develop away:
