@@ -1,6 +1,6 @@
 <?php
 
-$step = isset($_REQUEST['step']) ? $_REQUEST['step'] : 'first';
+$step = isset( $_REQUEST['step'] ) ? $_REQUEST['step'] : 'first';
 
 include 'resources.php';
 include 'functions.php';
@@ -11,15 +11,15 @@ else
 	error_reporting( E_ALL );
 
 /*BuildCompressSplit*/
-define('ABSPATH', dirname(__FILE__) . '/');
-if ( !defined('WP_MEMORY_LIMIT') )
-	define('WP_MEMORY_LIMIT', '64M');
+define( 'ABSPATH', dirname( __FILE__ ) . '/' );
+if ( !defined( 'WP_MEMORY_LIMIT' ) )
+	define( 'WP_MEMORY_LIMIT', '64M' );
 
-if ( function_exists('memory_get_usage') && ( (int) @ini_get('memory_limit') < abs(intval(WP_MEMORY_LIMIT)) ) )
-	@ini_set('memory_limit', WP_MEMORY_LIMIT);
+if ( function_exists( 'memory_get_usage' ) && ( (int) @ini_get( 'memory_limit' ) < abs( intval( WP_MEMORY_LIMIT ) ) ) )
+	@ini_set( 'memory_limit', WP_MEMORY_LIMIT );
 
-@ini_set('display_errors', 1);
-define('QI_DEBUG', false);
+@ini_set( 'display_errors', 1 );
+define( 'QI_DEBUG', false );
 
 include 'steps/header.php';
 include 'steps/footer.php';
@@ -27,7 +27,7 @@ include 'wp-error.php';
 include 'file.php';
 
 $wpdb = true; //Hack to stop auto-loading of the DB
-if ( file_exists('./db.php') ) {
+if ( file_exists( './db.php' ) ) {
 	/*BuildIgnoreInclude*/include 'db.php';
 } else {
 	include 'wp-files/wp-includes/wp-db.php';
@@ -39,7 +39,7 @@ include 'wp-files/wp-admin/includes/class-wp-filesystem-base.php';
 include 'wp-files/wp-admin/includes/class-wp-filesystem-direct.php';
 include 'wp-files/wp-admin/includes/class-wp-filesystem-ftpext.php';
 include 'wp-files/wp-admin/includes/class-ftp.php';
-if ( defined('COMPRESSED_BUILD') && COMPRESSED_BUILD ) { //class-ftp includes it in normal operation..
+if ( defined( 'COMPRESSED_BUILD' ) && COMPRESSED_BUILD ) { //class-ftp includes it in normal operation..
 	if ( $mod_sockets ) {
 		include 'wp-files/wp-admin/includes/class-ftp-sockets.php';
 	} else {
@@ -58,23 +58,23 @@ $credentials = array(
 	'connection_type' => 'ftp'
 );
 
-$credentials['connection_type'] = !empty($_POST['connection_type']) ? $_POST['connection_type']  : $credentials['connection_type'];
+$credentials['connection_type'] = !empty( $_POST['connection_type'] ) ? $_POST['connection_type']  : $credentials['connection_type'];
 
 // If defined, set it to that, Else, If POST'd, set it to that, If not, Set it to whatever it previously was(saved details in option)
-$credentials['hostname'] = !empty($_POST['hostname']) ? $_POST['hostname'] : $credentials['hostname'];
-$credentials['username'] = !empty($_POST['username']) ? $_POST['username'] : $credentials['username'];
-$credentials['password'] = !empty($_POST['password']) ? $_POST['password'] : $credentials['password'];
+$credentials['hostname'] = !empty( $_POST['hostname'] ) ? $_POST['hostname'] : $credentials['hostname'];
+$credentials['username'] = !empty( $_POST['username'] ) ? $_POST['username'] : $credentials['username'];
+$credentials['password'] = !empty( $_POST['password'] ) ? $_POST['password'] : $credentials['password'];
 
 //sanitize the hostname, Some people might pass in odd-data:
-$credentials['hostname'] = preg_replace('|\w+://|', '', $credentials['hostname']); //Strip any schemes off
+$credentials['hostname'] = preg_replace( '|\w+://|', '', $credentials['hostname'] ); //Strip any schemes off
 
-if ( strpos($credentials['hostname'], ':') !== false )
-	list( $credentials['hostname'], $credentials['port'] ) = explode(':', $credentials['hostname'], 2);
+if ( strpos( $credentials['hostname'], ':' ) !== false )
+	list( $credentials['hostname'], $credentials['port'] ) = explode( ':', $credentials['hostname'], 2 );
 else
-	unset($credentials['port']);
+	unset( $credentials['port'] );
 
-if ($step !== 'first' && ($step === 'download' || 'direct' == get_filesystem_method())) {
-	$result = WP_Filesystem($credentials, ABSPATH);
+if ( $step !== 'first' && ( $step === 'download' || 'direct' == get_filesystem_method() ) ) {
+	$result = WP_Filesystem( $credentials, ABSPATH );
 	if ( true === $result ) {
 		$step = 'download';
 	}

@@ -1,34 +1,34 @@
 <?php
 
-@set_magic_quotes_runtime(0);
-@ini_set('magic_quotes_sybase', 0);
+@set_magic_quotes_runtime( 0 );
+@ini_set( 'magic_quotes_sybase', 0 );
 
-if ( ini_get('register_globals') ) {
-	if ( isset($_REQUEST['GLOBALS']) )
-		die('GLOBALS overwrite attempt detected');
+if ( ini_get( 'register_globals' ) ) {
+	if ( isset( $_REQUEST['GLOBALS'] ) )
+		die( 'GLOBALS overwrite attempt detected' );
 
 	// Variables that shouldn't be unset
-	$noUnset = array('GLOBALS', '_GET', '_POST', '_COOKIE', '_REQUEST', '_SERVER', '_ENV', '_FILES', 'table_prefix', 'step');
+	$noUnset = array( 'GLOBALS', '_GET', '_POST', '_COOKIE', '_REQUEST', '_SERVER', '_ENV', '_FILES', 'table_prefix', 'step' );
 
-	$input = array_merge($_GET, $_POST, $_COOKIE, $_SERVER, $_ENV, $_FILES, isset($_SESSION) && is_array($_SESSION) ? $_SESSION : array());
+	$input = array_merge( $_GET, $_POST, $_COOKIE, $_SERVER, $_ENV, $_FILES, isset( $_SESSION ) && is_array( $_SESSION ) ? $_SESSION : array() );
 	foreach ( $input as $k => $v ) {
-		if ( !in_array($k, $noUnset) && isset($GLOBALS[$k]) ) {
+		if ( !in_array( $k, $noUnset ) && isset( $GLOBALS[$k] ) ) {
 			$GLOBALS[$k] = NULL;
-			unset($GLOBALS[$k]);
+			unset( $GLOBALS[$k] );
 		}
 	}
-	unset($input, $noUnset, $k, $v);
+	unset( $input, $noUnset, $k, $v );
 }
 
 // If already slashed, strip, Expect to ALWAYS be striped in this App. None of this silly pre-escaped stuff!
 if ( get_magic_quotes_gpc() ) {
-	$_GET    = _stripslashes_deep($_GET   );
-	$_POST   = _stripslashes_deep($_POST  );
-	$_COOKIE = _stripslashes_deep($_COOKIE);
+	$_GET    = _stripslashes_deep( $_GET    );
+	$_POST   = _stripslashes_deep( $_POST   );
+	$_COOKIE = _stripslashes_deep( $_COOKIE );
 }
 
 // Force REQUEST to be GET + POST.  If SERVER, COOKIE, or ENV are needed, use those superglobals directly.
-$_REQUEST = array_merge($_GET, $_POST);
+$_REQUEST = array_merge( $_GET, $_POST );
 
 $default_server_values = array(
 	'SERVER_SOFTWARE' => '',
@@ -78,19 +78,19 @@ $PHP_SELF = $_SERVER['PHP_SELF'];
 if ( empty( $PHP_SELF ) )
 	$_SERVER['PHP_SELF'] = $PHP_SELF = preg_replace( '/(\?.*)?$/', '', $_SERVER["REQUEST_URI"] );
 
-$is_apache = (strpos($_SERVER['SERVER_SOFTWARE'], 'Apache') !== false || strpos($_SERVER['SERVER_SOFTWARE'], 'LiteSpeed') !== false);
+$is_apache = ( strpos( $_SERVER['SERVER_SOFTWARE'], 'Apache' ) !== false || strpos( $_SERVER['SERVER_SOFTWARE'], 'LiteSpeed' ) !== false );
 
-$installer_file = defined('COMPRESSED_BUILD') && COMPRESSED_BUILD ? preg_replace('|\(\d+.*$|', '', __FILE__) : dirname(__FILE__) . '/installer.php';
+$installer_file = defined( 'COMPRESSED_BUILD' ) && COMPRESSED_BUILD ? preg_replace( '|\(\d+.*$|', '', __FILE__ ) : dirname( __FILE__ ) . '/installer.php';
 
-if ( function_exists('posix_getpwuid') && $userinfo = posix_getpwuid(@fileowner($installer_file)) )
+if ( function_exists( 'posix_getpwuid' ) && $userinfo = posix_getpwuid( @fileowner( $installer_file ) ) )
 	$the_guessed_user = $userinfo['name'];
-else if ( preg_match('|^/home/([^/]+?)/|i', $installer_file, $mat) )
+else if ( preg_match( '|^/home/([^/]+?)/|i', $installer_file, $mat ) )
 	$the_guessed_user = $mat[1];
 else
 	$the_guessed_user = 'username';
 
 $the_guessed_language = 'en_US';
-if ( !empty($_SERVER['HTTP_ACCEPT_LANGUAGE']) && preg_match('|(\w\w[\-_]\w\w)|i', $_SERVER['HTTP_ACCEPT_LANGUAGE'], $mat ) )
-	$the_guessed_language = str_replace('-', '_', $mat[1]);
+if ( !empty( $_SERVER['HTTP_ACCEPT_LANGUAGE'] ) && preg_match( '|(\w\w[\-_]\w\w)|i', $_SERVER['HTTP_ACCEPT_LANGUAGE'], $mat ) )
+	$the_guessed_language = str_replace( '-', '_', $mat[1] );
 
 $wpqi_version = '0.5-pre-beta';

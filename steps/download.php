@@ -22,9 +22,9 @@ $path = isset( $_REQUEST['path'] ) ? $_REQUEST['path'] : 'wordpress';
 
 the_header( 'download' );
 
-if (validate_file($path) !== 0) {
+if ( validate_file( $path ) !== 0 ) {
 ?>
-	<p><strong>Failed</strong> - Your path <code><?php echo htmlspecialchars($path) ?></code> looks invalid. Make sure that it's a valid path relative to this directory (<code><?php echo htmlspecialchars(ABSPATH) ?></code>)</p>
+	<p><strong>Failed</strong> - Your path <code><?php echo htmlspecialchars( $path ) ?></code> looks invalid. Make sure that it's a valid path relative to this directory (<code><?php echo htmlspecialchars( ABSPATH ) ?></code>)</p>
 <?php
 	the_footer();
 	die();
@@ -35,19 +35,19 @@ if (validate_file($path) !== 0) {
 <p>Beginning download</p>
 
 <?php
-$requested_url  = ( !empty($_SERVER['HTTPS'] ) && strtolower($_SERVER['HTTPS']) == 'on' ) ? 'https://' : 'http://';
+$requested_url  = ( !empty( $_SERVER['HTTPS'] ) && strtolower( $_SERVER['HTTPS'] ) == 'on' ) ? 'https://' : 'http://';
 $requested_url .= $_SERVER['HTTP_HOST'];
 $requested_url .= $_SERVER['REQUEST_URI'];
 
-set_time_limit(0); //We may need it...
+set_time_limit( 0 ); //We may need it...
 ?>
 <p>Connecting to your server&hellip;
 <?php
-$fs = WP_Filesystem($credentials, ABSPATH);
+$fs = WP_Filesystem( $credentials, ABSPATH );
 ?>
 <strong>Success!</strong></p>
 
-<p>Downloading WordPress from <code><?php echo htmlspecialchars($api['download']) ?></code>&hellip;
+<p>Downloading WordPress from <code><?php echo htmlspecialchars( $api['download'] ) ?></code>&hellip;
 
 <?php
 @ob_end_flush();
@@ -72,7 +72,7 @@ if ( ! empty( $response['headers']['content-md5'] ) ) {
 }
 else {
 ?>
-	<p>Downloading MD5 checksum to verify download from <code><?php echo htmlspecialchars($api['download']) ?>.md5</code>&hellip;
+	<p>Downloading MD5 checksum to verify download from <code><?php echo htmlspecialchars( $api['download'] ) ?>.md5</code>&hellip;
 <?php
 	@ob_end_flush();
 	flush();
@@ -105,16 +105,16 @@ if ( $md5 !== md5_file( $download_file ) ) {
 }
 ?><strong>Success!</strong></p>
 
-<p>Uncompressing WordPress files to <code><?php echo htmlspecialchars($path) ?></code>&hellip; <strong><span id="progress">0%</span></strong></p>
+<p>Uncompressing WordPress files to <code><?php echo htmlspecialchars( $path ) ?></code>&hellip; <strong><span id="progress">0%</span></strong></p>
 
 <?php
 @ob_end_flush();
 flush();
 
-function _install_tick($args) {
+function _install_tick( $args ) {
 	static $last = 0;
 	if ( ! $args['process'] ) return;
-	$percent = round($args['process'] / $args['count'] * 100, 0);
+	$percent = round( $args['process'] / $args['count'] * 100, 0 );
 	if ( time() > $last + 1 || $percent >= 100 ) { //Once per 2 second.. or ended.
 		$last = time();
 		echo "<script type='text/javascript'>document.getElementById('progress').innerHTML = '{$percent}%';</script>";
@@ -123,11 +123,11 @@ function _install_tick($args) {
 	}
 }
 
-$res = unzip_file($download_file, ABSPATH . '/' . $path, '_install_tick');
-if ( is_wp_error($res) ) {
+$res = unzip_file( $download_file, ABSPATH . '/' . $path, '_install_tick' );
+if ( is_wp_error( $res ) ) {
 	$error = $res->get_error_message();
 	$data = $res->get_error_data();
-	if ( !empty($data) )
+	if ( !empty( $data ) )
 		$error .= $res->get_error_data();
 	echo "<script type='text/javascript'>document.getElementById('progress').innerHTML = '<strong>Failed</strong> - Uh oh, we had an error: " . $error . "';</script>";
 	echo "<noscript><strong>Failed</strong> - Uh oh, we had an error: {$error}</noscript>";
@@ -139,26 +139,26 @@ if ( is_wp_error($res) ) {
 
 <p>Removing temporary files&hellip;
 <?php
-if ( unlink($download_file) )
+if ( unlink( $download_file ) )
 	echo '<strong>Success!</strong>';
 else
-	echo '<strong>Failure</strong> &mdash; Please remove <code>' . htmlspecialchars($download_file) . '</code> manually.';
+	echo '<strong>Failure</strong> &mdash; Please remove <code>' . htmlspecialchars( $download_file ) . '</code> manually.';
 ?></p>
 
 <?php
 //Finally.. Delete ourselves..
-if ( defined('COMPRESSED_BUILD') && COMPRESSED_BUILD && !file_exists('./build.php') ) { //as long as he build file doesnt exist.. (ie. dev install)
+if ( defined( 'COMPRESSED_BUILD' ) && COMPRESSED_BUILD && !file_exists( './build.php' ) ) { //as long as he build file doesnt exist.. (ie. dev install)
 	//Lets hope like he.. that someone hasnt uploaded it as a filename which WP has created in the current dir.. ie. index.php
 	echo '<p>Removing installer&hellip; ';
 	if ( $wp_filesystem->delete( $installer_file ) )
 		echo '<strong>Success!</strong>.</p>';
 	else
-		echo '<strong>Failed</strong> &mdash; Please remove <code>' . htmlspecialchars(basename($installer_file)) . '</code> manually.</p>';
+		echo '<strong>Failed</strong> &mdash; Please remove <code>' . htmlspecialchars( basename( $installer_file ) ) . '</code> manually.</p>';
 }
 
 ?>
 <p><strong>Success!</strong> WordPress has been downloaded!</p>
-<p class="step"><a href="<?php echo htmlspecialchars($path) ?>wp-admin/setup-config.php" class="button">Begin installation</a></p>
+<p class="step"><a href="<?php echo htmlspecialchars( $path ) ?>wp-admin/setup-config.php" class="button">Begin installation</a></p>
 
 <?php
 the_footer();

@@ -1,7 +1,8 @@
 <?php
 
 function current_url() {
-	return (isset($_SERVER['HTTPS']) && strtolower($_SERVER['HTTPS']) == 'on' ? 'https://' : 'http://') . $_SERVER['HTTP_HOST'] . trailingslashit(dirname($_SERVER['REQUEST_URI']));
+	return ( isset( $_SERVER['HTTPS'] ) && strtolower( $_SERVER['HTTPS'] ) == 'on' ? 'https://' : 'http://' )
+		. $_SERVER['HTTP_HOST'] . trailingslashit( dirname( $_SERVER['REQUEST_URI'] ) );
 }
 
 /**
@@ -16,7 +17,7 @@ function current_url() {
  * @param array|string $value The array or string to be striped.
  * @return array|string Stripped array (or string in the callback).
  */
-function _stripslashes_deep($value) {
-	$value = is_array($value) ? array_map('_stripslashes_deep', $value) : stripslashes($value);
+function _stripslashes_deep( $value ) {
+	$value = is_array( $value ) ? array_map( '_stripslashes_deep', $value ) : stripslashes( $value );
 	return $value;
 }
