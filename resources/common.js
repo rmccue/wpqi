@@ -1,7 +1,7 @@
 this.advanced_options = function() {
 	var div = document.getElementById('advanced-options');
 	var toggle = document.getElementById('advanced-options-toggle');
-	
+
 	if ( ! div || ! toggle )
 		return;
 	if ( div.className && div.className.indexOf('force-show-block') )

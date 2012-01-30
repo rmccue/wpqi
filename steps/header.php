@@ -9,7 +9,7 @@ function the_header($id = '', $resources = array()) {
 <?php
 $resources[] = 'install.css';
 $resources[] = 'common.js';
-foreach((array)$resources as $file ) { 
+foreach((array)$resources as $file ) {
 	if ( 'css' == substr($file, -3) )
 		echo '<link rel="stylesheet" type="text/css" href="' . res_url($file) . '" />' . "\n";
 	elseif ( 'js' == substr($file, -2) )
