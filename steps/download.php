@@ -47,7 +47,7 @@ $fs = WP_Filesystem($credentials, ABSPATH);
 ?>
 <strong>Success!</strong></p>
 
-<p>Downloading WordPress from <code><?php echo $api['download'] ?></code>&hellip;
+<p>Downloading WordPress from <code><?php echo htmlspecialchars($api['download']) ?></code>&hellip;
 
 <?php
 @ob_end_flush();
@@ -63,7 +63,7 @@ if ( is_wp_error($download_file) ) {
 ?><strong>Success!</strong></p>
 
 <?php if ( $api['download'] != 'http://wordpress.org/latest.zip' ) : ?>
-<p>Downloading MD5 checksum to verify download from <code><?php echo $api['download'] ?>.md5</code>&hellip;
+<p>Downloading MD5 checksum to verify download from <code><?php echo htmlspecialchars($api['download']) ?>.md5</code>&hellip;
 <?php
 @ob_end_flush();
 flush();
@@ -94,7 +94,7 @@ if ( trim( wp_remote_retrieve_body( $md5_response ) ) !== md5_file( $download_fi
 ?><strong>Success!</strong></p>
 <?php endif; ?>
 
-<p>Uncompressing WordPress files to <?php echo $path ?>&hellip; <strong><span id="progress">0%</span></strong></p>
+<p>Uncompressing WordPress files to <?php echo htmlspecialchars($path) ?>&hellip; <strong><span id="progress">0%</span></strong></p>
 
 <?php
 @ob_end_flush();
@@ -131,7 +131,7 @@ if ( is_wp_error($res) ) {
 if ( unlink($download_file) )
 	echo '<strong>Success!</strong>';
 else
-	echo '<strong>Failure</strong> &mdash; Please remove <code>' . $download_file . '</code> manually.';
+	echo '<strong>Failure</strong> &mdash; Please remove <code>' . htmlspecialchars($download_file) . '</code> manually.';
 ?></p>
 
 <?php
@@ -142,12 +142,12 @@ if ( defined('COMPRESSED_BUILD') && COMPRESSED_BUILD && !file_exists('./build.ph
 	if ( $wp_filesystem->delete( $installer_file ) )
 		echo '<strong>Success!</strong>.</p>';
 	else
-		echo '<strong>Failed</strong> &mdash; Please remove <code>' . basename($installer_file) . '</code> manually.</p>';
+		echo '<strong>Failed</strong> &mdash; Please remove <code>' . htmlspecialchars(basename($installer_file)) . '</code> manually.</p>';
 }
 
 ?>
 <p><strong>Success!</strong> WordPress has been downloaded!</p>
-<p class="step"><a href="<?php echo $path ?>wp-admin/setup-config.php" class="button">Begin installation</a></p>
+<p class="step"><a href="<?php echo htmlspecialchars($path) ?>wp-admin/setup-config.php" class="button">Begin installation</a></p>
 
 <?php
 the_footer();
