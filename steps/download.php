@@ -1,5 +1,17 @@
 <?php
 
+function _cleanup($download_file) {
+?>
+<p>Removing temporary files&hellip;
+<?php
+if ( unlink( $download_file ) )
+	echo '<strong>Success!</strong>';
+else
+	echo '<strong>Failure</strong> &mdash; Please remove <code>' . htmlspecialchars( $download_file ) . '</code> manually.';
+?></p>
+<?php
+}
+
 $query = array(
 	'locale' => 'en_US',
 	'php' => phpversion()
@@ -106,6 +118,7 @@ if ( $md5 !== $our_md5 ) {
 	</small>
 	</p>
 <?php
+	_cleanup($download_file);
 
 	the_footer();
 	die();
@@ -138,21 +151,17 @@ if ( is_wp_error( $res ) ) {
 		$error .= $res->get_error_data();
 	echo "<script type='text/javascript'>document.getElementById('progress').innerHTML = '<strong>Failed</strong> - Uh oh, we had an error: " . $error . "';</script>";
 	echo "<noscript><strong>Failed</strong> - Uh oh, we had an error: {$error}</noscript>";
+
+	_cleanup($download_file);
+
+	the_footer();
 	exit;
 } else {
 	echo "<script type='text/javascript'>document.getElementById('progress').innerHTML = '<strong>Success!</strong>';</script>";
 }
-?>
 
-<p>Removing temporary files&hellip;
-<?php
-if ( unlink( $download_file ) )
-	echo '<strong>Success!</strong>';
-else
-	echo '<strong>Failure</strong> &mdash; Please remove <code>' . htmlspecialchars( $download_file ) . '</code> manually.';
-?></p>
+_cleanup($download_file);
 
-<?php
 //Finally.. Delete ourselves..
 if ( defined( 'COMPRESSED_BUILD' ) && COMPRESSED_BUILD && !file_exists( './build.php' ) ) { //as long as he build file doesnt exist.. (ie. dev install)
 	//Lets hope like he.. that someone hasnt uploaded it as a filename which WP has created in the current dir.. ie. index.php
