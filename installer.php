@@ -3,7 +3,6 @@
 $step = isset($_REQUEST['step']) ? $_REQUEST['step'] : 'first';
 
 include 'resources.php';
-include 'configuration.php';
 include 'functions.php';
 include 'servervars.php';
 
