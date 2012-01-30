@@ -5,6 +5,10 @@ $step = isset($_REQUEST['step']) ? $_REQUEST['step'] : 'first';
 include 'resources.php';
 include 'functions.php';
 include 'servervars.php';
+if ( defined( 'E_DEPRECATED' ) )
+	error_reporting( E_ALL & ~E_DEPRECATED & ~E_STRICT );
+else
+	error_reporting( E_ALL );
 
 /*BuildCompressSplit*/
 define('ABSPATH', dirname(__FILE__) . '/');
@@ -14,10 +18,6 @@ if ( !defined('WP_MEMORY_LIMIT') )
 if ( function_exists('memory_get_usage') && ( (int) @ini_get('memory_limit') < abs(intval(WP_MEMORY_LIMIT)) ) )
 	@ini_set('memory_limit', WP_MEMORY_LIMIT);
 
-if ( defined( 'E_DEPRECATED' ) )
-	error_reporting( E_ALL & ~E_DEPRECATED & ~E_STRICT );
-else
-	error_reporting( E_ALL );
 @ini_set('display_errors', 1);
 define('QI_DEBUG', false);
 
